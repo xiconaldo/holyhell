@@ -2,10 +2,9 @@
 
 /**
  * Conta o número de ocorrências de determinado símbolo em uma string.
- * 
- * @param [in] word				string da qual deseja-se contar os símbolos.
- * @param [in] symbol 			símbolo que será buscado na string.
- * @return						número de ocorrências do símbolo.
+ * @param  word   string da qual deseja-se contar os símbolos.
+ * @param  symbol símbolo que será buscado na string.
+ * @return        número de ocorrências do símbolo.
  */
 int count_symbol(const std::string& word, char symbol){
 	int pos = -1;
@@ -23,45 +22,34 @@ int count_symbol(const std::string& word, char symbol){
 /**
  * Lê um arquivo .obj, extrai as informações de vértices, normais e
  * texturas contidas nele e as escreve em arrays, separadamente.
- * 
- * @param [in] obj_name			nome do arquivo .obj de onde deseja-se ler 
- * 								as informações.
- * 							
- * @param [out] vertices 		ponteiro para um array de Vertex que contem
- * 								todos os vértices lidos do arquivo .obj.
- * 							
- * @param [out] normals 		ponteiro para um array de Vertex que contem 
- * 								todos os vetores normais lidos do .obj.
- * 							
- * @param [out] uvs 			ponteiro para um array de Vertex que contem
- * 								todas as coordenadas de textura lidas do .obj.
- * 							
- * @param [out] vertex_indices	ponteiro para um array de int que contem 
- * 								todos os índices que referenciam os elementos 
- * 								no array de vértices, lidos do .obj.
- * 								
- * @param [out] normal_indices 	ponteiro para um array de int que contem 
- * 								todos os índices que referenciam os elementos 
- * 								no array de vetores normais, lidos do .obj.
- * 													
- * @param [out] uv_indices		ponteiro para um array de int que contem 
- * 								todos os índices que referenciam os elementos 
- * 								no array de coordenadas de textura, lidos 
- * 								do arquivo .obj.
- * 								
- * @param [out] vertex_count 	referência para um inteiro que contem
- * 								o número de vértices lidos do arquivo.
- * 								
- * @param [out] normal_count	referência para um inteiro que contem
- * 								o número de normais lidas do arquivo.
- * 								
- * @param [out] uv_count		referência para um inteiro que contem
- * 								o número de coordenadas de textura lidas 
- * 								do arquivo.
- * 								
- * @param [out] triangle_count 	referência para um inteiro que contem
- * 								o número de triângulos formados pelos 
- * 								vértices lidos do arquivo.
+ * @param obj_name       nome do arquivo .obj de onde deseja-se ler 
+ *                       as informações.
+ * @param vertices       ponteiro para um array de Vertex que contem
+ *                       todos os vértices lidos do arquivo .obj.
+ * @param normals        ponteiro para um array de Vertex que contem 
+ *                       todos os vetores normais lidos do .obj.
+ * @param uvs            ponteiro para um array de Vertex que contem
+ *                       todas as coordenadas de textura lidas do .obj.
+ * @param vertex_indices ponteiro para um array de int que contem 
+ *                       todos os índices que referenciam os elementos 
+ *                       no array de vértices, lidos do .obj.
+ * @param normal_indices ponteiro para um array de int que contem 
+ *                       todos os índices que referenciam os elementos 
+ *                       no array de vetores normais, lidos do .obj.
+ * @param uv_indices     ponteiro para um array de int que contem 
+ *                       todos os índices que referenciam os elementos 
+ *                       no array de coordenadas de textura, lidos 
+ *                       do arquivo .obj.
+ * @param vertex_count   referência para um inteiro que contem
+ *                       o número de vértices lidos do arquivo.
+ * @param normal_count   referência para um inteiro que contem
+ *                       o número de normais lidas do arquivo.
+ * @param uv_count       referência para um inteiro que contem
+ *                       o número de coordenadas de textura lidas 
+ *                       do arquivo.
+ * @param triangle_count referência para um inteiro que contem
+ *                       o número de triângulos formados pelos 
+ *                       vértices lidos do arquivo.
  */
 void load_data(	const std::string& obj_name,
 				Vertex** const vertices,
@@ -281,30 +269,23 @@ void load_data(	const std::string& obj_name,
 /**
  * Agrupa os vértices, normais e coordenadas de textura em um único array de acordo
  * com a combinação apresentada pelos índices fornecidos.
- * 
- * @param [in] vertices 		array que contem uma lista de vértices.
- * 							
- * @param [in] normals 			array que contem uma lista de vetores normais.
- * 							
- * @param [in] uvs 				array que contem uma lista de coordenadas de textura.
- * 							
- * @param [in] vertex_indices	array de índices inteiros que mapeaiam os
- * 								elementos que se encontram em vertices.
- * 								
- * @param [in] normal_indices 	array de índices inteiros que mapeaiam os
- * 								elementos que se encontram em normals.
- * 													
- * @param [in] uv_indices		array de índices inteiros que mapeaiam os
- * 								elementos que se encontram em uvs.
- *
- * @param [in] triangle_count	número de triângulos formados pelos vértices.
- *
- * @param [out] data 			ponteiro para um array de Groups, que contêm 
- * 								todos os vértices, normais e coordenadas de 
- * 								textura lidas dos três primeiros parâmetros, 
- * 								agrupados de acordo com a combinação de índices 
- * 								passados nos três últimos parâmetros.
+ * @param vertices       array que contem uma lista de vértices.
+ * @param normals        array que contem uma lista de vetores normais.
+ * @param uvs            array que contem uma lista de coordenadas de textura.
+ * @param vertex_indices array de índices inteiros que mapeaiam os
+ *                       elementos que se encontram em vertices.
+ * @param normal_indices array de índices inteiros que mapeaiam os
+ *                       elementos que se encontram em normals.
+ * @param uv_indices     array de índices inteiros que mapeaiam os
+ *                       elementos que se encontram em uvs.
+ * @param triangle_count número de triângulos formados pelos vértices.
+ * @param data           ponteiro para um array de Groups, que contêm 
+ *                       todos os vértices, normais e coordenadas de 
+ *                       textura lidas dos três primeiros parâmetros, 
+ *                       agrupados de acordo com a combinação de índices 
+ *                       passados nos três últimos parâmetros.
  */
+
 void group_data(Vertex* const vertices,
 				Vertex* const normals,
 				Vertex* const uvs, 
@@ -336,6 +317,18 @@ void group_data(Vertex* const vertices,
  * @param [out] data 			array de estruturas Group, que contêm todos os
  * 								vértices, normais e coordenadas de texturas 
  * 								lidos do arquivo.
+ */
+
+/**
+ * Extrai a informação sobre vértices, normais e coordenadas de textura 
+ * de um arquivo .obj e escreve os dados obtidos de forma agrupada, em 
+ * um único array.
+ * @param obj_name       nome do arquivo .obj do qual deseja-se extrair 
+ *                       os dados.
+ * @param triangle_count quantidade de triângulos lidos no arquivo.
+ * @param data           array de estruturas Group, que contêm todos os
+ *                       vértices, normais e coordenadas de texturas 
+ *                       lidos do arquivo.
  */
 void load_grouped_data(	const std::string& obj_name,
 						int& triangle_count,
@@ -374,13 +367,12 @@ void load_grouped_data(	const std::string& obj_name,
  * Lê um arquivo de texto e escreve e retorna seu conteúdo na forma
  * de uma string. Neste contexto, é usada para ler arquivos que contêm
  * código-fonte de shaders, no formato .glsl.
- * 
- * @param [in] file_name			nome do arquivo a ser lido.
- * 
- * @return 							string com o conteúdo do arquivo.
+ * @param  file_name nome do arquivo a ser lido.
+ * @return           string com o conteúdo do arquivo.
  */
 std::string load_shader(const std::string& file_name){
 	std::fstream file(file_name, std::ios_base::in);
+	if(file.fail()) std::cout << "Arquivo " << file_name << " não encontrado" << std::endl;
 	std::string code;
 	std::string line;
 

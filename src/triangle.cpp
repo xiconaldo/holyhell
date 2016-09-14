@@ -19,13 +19,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 
 //Compila os shaders
-GLuint compile_shaders(){
+GLuint compile_shaders(const std::string& vertex_shader_location, const std::string& frag_shader_location){
 	GLuint vertex_shader;
 	GLuint fragment_shader;
 	GLuint program;
  
- 	std::string vertex_shader_string = load_shader("../shaders/vertex_shader_source.glsl");
- 	std::string fragment_shader_string = load_shader("../shaders/fragment_shader_source.glsl");
+ 	std::string vertex_shader_string = load_shader(vertex_shader_location);
+ 	std::string fragment_shader_string = load_shader(frag_shader_location);
 	const GLchar *vertex_shader_source[] = {vertex_shader_string.c_str()};
 	const GLchar *fragment_shader_source[] = {fragment_shader_string.c_str()};
 
@@ -77,7 +77,11 @@ GLuint compile_shaders(){
 
 // Compila shaders
 
-int main(void){
+int main(int argc, const char* argv[]){
+
+	std::string location(argv[0]);
+	location = location.substr(0, location.rfind('/')+1);
+
 	// Inicialização do GLFW e GLEW
 	//#############################################################
 	
@@ -112,7 +116,8 @@ int main(void){
 	//#############################################################
 	// Parte OpenGL
 
-	GLuint rendering_program = compile_shaders();
+	GLuint rendering_program = compile_shaders(location + "../shaders/vertex_shader_source.glsl",
+											   location + "../shaders/fragment_shader_source.glsl");
 
 	GLint success; 
 	glGetProgramiv(rendering_program, GL_LINK_STATUS, &success);
@@ -127,7 +132,7 @@ int main(void){
 
 	GLint tr;
 	Group *g;
-	load_grouped_data("../data/man2.obj", tr, &g);
+	load_grouped_data(location + "../data/man2.obj", tr, &g);
 	tr *= 3;
 	glPointSize(10.0f);
 	//################################################################
@@ -161,11 +166,8 @@ int main(void){
 
 	}
 
-	std::cout << "OK" << std::endl;
 	glfwDestroyWindow(window);
-	std::cout << "OK" << std::endl;
 	glfwTerminate();
-	std::cout << "OK" << std::endl;
 	exit(EXIT_SUCCESS);
 	//##################################################################
 }

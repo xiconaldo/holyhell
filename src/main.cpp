@@ -6,15 +6,18 @@
 #include <loader.h>
 #include <shader.h>
 
-std::string SHADERS, DATA, TEXTURES;
+
+CreateProgram create_program;
 
 void initDirectories(const char *location){
+	std::string SHADERS, DATA, TEXTURES;
 	std::string str_location(location);
 	str_location = str_location.substr(0, str_location.rfind('/')+1);
 	SHADERS = DATA = TEXTURES = str_location;
 	SHADERS = SHADERS + "../shaders/";
 	DATA = DATA + "../data/";
 	TEXTURES = TEXTURES + "../textures/";
+	create_program.baseLocation = SHADERS;
 }
 
 ////////////////////////
@@ -73,14 +76,27 @@ int main(int argc, const char* argv[]){
 		exit(EXIT_FAILURE);
 	}
 
+	GLenum flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
+	std::string names[] = {"default_vertex.glsl", "default_frag.glsl"};
+	GLuint program = create_program(2, flags, names);
+	glUseProgram(program);
+
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	glPointSize(5.0f);
+
 	///////////////
 	// Main Loop //
 	///////////////
 	while (!glfwWindowShouldClose(window))
 	{
 
-		const GLfloat background_color[] = {0.5f, 0.5f , 0.5f, 1.0f};
+		const GLfloat background_color[] = {1.0f, 1.0f , 1.0f, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
+
+		glDrawArrays(GL_POINTS, 0, 1);
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();

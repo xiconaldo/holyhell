@@ -1,6 +1,14 @@
 #include <shader.h>
 
 /**
+ * Construtor
+ * @param  location 	endereço base onde encontram-se os shaders.
+ */
+CreateProgram::CreateProgram(const std::string& location) :
+	baseLocation(location)
+{}
+
+/**
  * Gera um programa a partir de shaders fornecidos.
  * @param  shaderCount número de shaders que estarão presentes no programa.
  * @param  shaderType  array conteúdo os tipos de shader que farão parte do programa.
@@ -8,7 +16,7 @@
  *                     fonte dos shaders a serem usados.
  * @return             retorna um número que representa o programa criado.
  */
-GLuint create_program(GLint shaderCount, GLenum *shaderType, std::string *location){
+GLuint CreateProgram::operator()(GLint shaderCount, GLenum *shaderType, std::string *location){
 	GLuint *shader = new GLuint[shaderCount];
 	GLint program, success, log_size;
 	std::string shader_source;
@@ -18,7 +26,7 @@ GLuint create_program(GLint shaderCount, GLenum *shaderType, std::string *locati
 
 	for(int i = 0; i < shaderCount; i++){
 		shader[i] = glCreateShader(shaderType[i]);
-		shader_source = load_shader(location[i]);
+		shader_source = load_shader(baseLocation + location[i]);
 		const GLchar *sources[] = {shader_source.c_str()};
 
 		glShaderSource(shader[i], 1, sources, NULL);

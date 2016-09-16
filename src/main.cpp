@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <loader.h>
+#include <shader.h>
 
 std::string SHADERS, DATA, TEXTURES;
 
@@ -11,9 +12,9 @@ void initDirectories(const char *location){
 	std::string str_location(location);
 	str_location = str_location.substr(0, str_location.rfind('/')+1);
 	SHADERS = DATA = TEXTURES = str_location;
-	SHADERS = SHADERS + "../shaders";
-	DATA = DATA + "../data";
-	TEXTURES = TEXTURES + "../textures";
+	SHADERS = SHADERS + "../shaders/";
+	DATA = DATA + "../data/";
+	TEXTURES = TEXTURES + "../textures/";
 }
 
 ////////////////////////

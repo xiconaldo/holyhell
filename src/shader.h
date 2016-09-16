@@ -1,6 +1,10 @@
 #ifndef SHADER_UTIL_H
 #define SHADER_UTIL_H
 
+#include <GL/glew.h>
+#include <loader.h>
+#include <iostream>
+
 /**
  * Conjunto de funções usadas para compilar e linkar shaders de maneira mais simples.
  *
@@ -16,5 +20,7 @@
  *   	base do diretório onde ficam os shaders para reduzir os caminhos
  *   	(sugestão: usar functors).
  */
+
+GLuint create_program(GLint shaderCount, GLenum *shaderType, std::string *location);
 
 #endif

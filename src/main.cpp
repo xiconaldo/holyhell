@@ -5,12 +5,16 @@
 #include <GLFW/glfw3.h>
 #include <loader.h>
 #include <shader.h>
+#include <vector>
 
 
 CreateProgram create_program;
+std::string DATA;
 
 void initDirectories(const char *location){
-	std::string SHADERS, DATA, TEXTURES;
+	std::string SHADERS;
+	//std::string DATA;
+	std::string TEXTURES;
 	std::string str_location(location);
 	str_location = str_location.substr(0, str_location.rfind('/')+1);
 	SHADERS = DATA = TEXTURES = str_location;
@@ -76,16 +80,30 @@ int main(int argc, const char* argv[]){
 		exit(EXIT_FAILURE);
 	}
 
-	GLenum flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
+	//////////////////////
+	// Program begining //
+	//////////////////////
+/*	GLenum flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 	std::string names[] = {"default_vertex.glsl", "default_frag.glsl"};
 	GLuint program = create_program(2, flags, names);
 	glUseProgram(program);
+
+	std::vector<Vertex> data;
+	int tr_count;
+	load_grouped_data(DATA + "ico.obj", tr_count, data);
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
+	GLuint buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), (void*)data.data(), GL_STATIC_DRAW);
 	glPointSize(5.0f);
+
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);*/
 
 	///////////////
 	// Main Loop //
@@ -96,7 +114,11 @@ int main(int argc, const char* argv[]){
 		const GLfloat background_color[] = {1.0f, 1.0f , 1.0f, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
 
-		glDrawArrays(GL_POINTS, 0, 1);
+		/*glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normals));
+		glEnableVertexAttribArray(1);
+		glDrawArrays(GL_TRIANGLES, 0, 3*tr_count);*/
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();

@@ -28,7 +28,7 @@ public:
 	CreateProgram(){}
 	CreateProgram(const std::string& location);
 	GLuint operator()(GLint shaderCount, GLenum *shaderType, std::string *location);
-	std::string baseLocation;
+	static std::string baseLocation;
 };
 
 #endif

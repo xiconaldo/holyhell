@@ -1,6 +1,9 @@
 #ifndef SCENE_ELEMENTS_H
 #define SCENE_ELEMENTS_H
 
+#include <GL/glew.h>
+#include <loader.h>
+
 /**
  * Conjunto de objetos que representam objetos da cena, tais
  * como personagens, câmera, fontes de luz e objetos estáticos.
@@ -25,5 +28,20 @@
  * 		diferença de apresentar métodos para controle do personagem 
  * 		através de interação.
  */
+
+class Object{
+public:
+	Object();
+	void load_data();
+	void draw();
+
+private:
+	GLuint vbo;
+	GLuint vao;
+	std::vector<Vertex> coord;
+	glm::mat4 transform;
+	std::string data_location;
+	int triangles;
+};
 
 #endif

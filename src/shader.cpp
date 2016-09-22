@@ -4,9 +4,9 @@
  * Construtor
  * @param  location 	endereço base onde encontram-se os shaders.
  */
-CreateProgram::CreateProgram(const std::string& location) :
-	baseLocation(location)
-{}
+CreateProgram::CreateProgram(const std::string& location){
+	baseLocation = location;
+}
 
 /**
  * Gera um programa a partir de shaders fornecidos.
@@ -66,3 +66,5 @@ GLuint CreateProgram::operator()(GLint shaderCount, GLenum *shaderType, std::str
 	
 	return program;
 }
+
+std::string CreateProgram::baseLocation = "";

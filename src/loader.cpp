@@ -87,9 +87,9 @@ void load_data(	const std::string& obj_name,
 			triangle_count += count_symbol(line)-2;
 		}
 	}	
-	std::cout << "Vertices: " << vertex_count << std::endl;
-	std::cout << "Normals: " << normal_count << std::endl;
-	std::cout << "Textures: " << uv_count << std::endl;
+	//std::cout << "Vertices: " << vertex_count << std::endl;
+	//std::cout << "Normals: " << normal_count << std::endl;
+	//std::cout << "Textures: " << uv_count << std::endl;
 
 	vertices.resize(vertex_count);
 	if(normal_count > 0) normals.resize(normal_count);

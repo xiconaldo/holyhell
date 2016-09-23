@@ -3,6 +3,8 @@
 
 #include <GL/glew.h>
 #include <loader.h>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 /**
  * Conjunto de objetos que representam objetos da cena, tais
@@ -17,7 +19,7 @@
  * 		o objeto deve guardar os seus fatores de translação, rotação 
  * 		e escala, necessárias à criação da model.
  *
- * 		- Classe para a câmera, que deve conter a posição da câmera
+ * 		+ Classe para a câmera, que deve conter a posição da câmera
  * 		e os vetores que formam seu espaço, informações necessárias para
  * 		contruir a matriz view.
  *
@@ -29,19 +31,57 @@
  * 		através de interação.
  */
 
-class Object{
+class Camera{
 public:
-	Object();
-	void load_data();
-	void draw();
+	Camera();
+
+	Camera(const glm::vec3 &position,
+		   const glm::vec3 &lookAt = glm::vec3(0.0f, 0.0f, -1.0f),
+		   const glm::vec3 &up = glm::vec3(0.0f, 1.0f, 0.0f));
+
+	Camera(float positionX, float positionY, float positionZ,
+		   float lookAtX = 0.0f, float lookAtY = 0.0f, float lookAtZ = -1.0f,
+		   float upX = 0.0f, float upY = 1.0f, float upZ = 0.0f);
+
+	void setCamera(const glm::vec3 &position,
+			   	   const glm::vec3 &lookAt = glm::vec3(0.0f, 0.0f, -1.0f),
+			   	   const glm::vec3 &up = glm::vec3(0.0f, 1.0f, 0.0f));
+
+	void setCamera(float positionX, float positionY, float positionZ,
+				   float lookAtX = 0.0f, float lookAtY = 0.0f, float lookAtZ = -1.0f,
+				   float upX = 0.0f, float upY = 1.0f, float upZ = 0.0f);
+
+	void setPosition(const glm::vec3 &position);
+
+	void setPosition(float positionX, float positionY, float positionZ);
+
+	void setLookAt(const glm::vec3 &lookAt = glm::vec3(0.0f, 0.0f, -1.0f));
+
+	void setLookAt(float lookAtX = 0.0f, float lookAtY = 0.0f, float lookAtZ = -1.0f);
+
+	void setUp(const glm::vec3 &up = glm::vec3(0.0f, 1.0f, 0.0f));
+
+	void setUp(float upX = 0.0f, float upY = 1.0f, float upZ = 0.0f);
+
+	void translate(float x, float y, float z);
+
+	void rotate(int xc, int yc, int zc, float degrees);
+
+	void resetMatrix();
 
 private:
-	GLuint vbo;
-	GLuint vao;
-	std::vector<Vertex> coord;
-	glm::mat4 transform;
-	std::string data_location;
-	int triangles;
+	glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	glm::vec3 position;
+	glm::vec3 lookAt;
+	glm::vec3 up;
+
+	glm::mat4 m_view;
+	glm::mat4 base_view;
+
+	void updateView();
+	void updateBaseView();
 };
 
 #endif

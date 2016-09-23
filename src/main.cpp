@@ -6,6 +6,7 @@
 #include <loader.h>
 #include <shader.h>
 #include <vector>
+#include <scene.h>
 
 
 CreateProgram create_program;
@@ -83,14 +84,14 @@ int main(int argc, const char* argv[]){
 	//////////////////////
 	// Program begining //
 	//////////////////////
-/*	GLenum flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
+	GLenum flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 	std::string names[] = {"default_vertex.glsl", "default_frag.glsl"};
 	GLuint program = create_program(2, flags, names);
 	glUseProgram(program);
 
 	std::vector<Vertex> data;
 	int tr_count;
-	load_grouped_data(DATA + "ico.obj", tr_count, data);
+	load_grouped_data(DATA + "monkey.obj", tr_count, data);
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
@@ -103,7 +104,14 @@ int main(int argc, const char* argv[]){
 	glPointSize(5.0f);
 
 	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);*/
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_CLAMP);
+	//glEnable(GL_DEPTH_TEST);
+
+	/*Camera camera(1.0f, 1.0f, 1.0f,
+				  0.0f, 0.0f, 0.0f,
+				  0.0f, 1.0f, 0.0f);*/
+	Camera camera;
 
 	///////////////
 	// Main Loop //
@@ -114,12 +122,18 @@ int main(int argc, const char* argv[]){
 		const GLfloat background_color[] = {1.0f, 1.0f , 1.0f, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
 
-		/*glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
+		//GLfloat min = 0xffffffff;
+		//glClearBufferfv(GL_DEPTH, 0, &min);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normals));
 		glEnableVertexAttribArray(1);
-		glDrawArrays(GL_TRIANGLES, 0, 3*tr_count);*/
+		glDrawArrays(GL_TRIANGLES, 0, 3*tr_count);
 		
+		camera.rotate(0, 0, 1, 0.01f);
+		camera.translate(0, 0, -0.1);
+		//camera.rotate(0, 1, 0, 0.001f);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}

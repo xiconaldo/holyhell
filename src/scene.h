@@ -11,8 +11,8 @@
  * como personagens, câmera, fontes de luz e objetos estáticos.
  *
  * TODO:
- * 		- Classe para objetos estáticos, que deve conter os vértices,
- * 		as normais e as coordenadas de textura do objetos. Também é
+ * 		-> Classe para objetos estáticos, que deve conter os vértices,
+ * 		as normais e as coordenadas de textura dos objetos. Também é
  * 		necessário armazenar o local em disco onde se encontra estas
  * 		informações, além dos arquivos de textura. Propriedades
  * 		referentes a iluminação também ficam neste objeto. Além disso,

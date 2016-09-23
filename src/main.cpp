@@ -107,10 +107,6 @@ int main(int argc, const char* argv[]){
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_CLAMP);
 	//glEnable(GL_DEPTH_TEST);
-
-	/*Camera camera(1.0f, 1.0f, 1.0f,
-				  0.0f, 0.0f, 0.0f,
-				  0.0f, 1.0f, 0.0f);*/
 	Camera camera;
 
 	///////////////
@@ -132,8 +128,6 @@ int main(int argc, const char* argv[]){
 		glDrawArrays(GL_TRIANGLES, 0, 3*tr_count);
 		
 		camera.rotate(0, 0, 1, 0.01f);
-		camera.translate(0, 0, -0.1);
-		//camera.rotate(0, 1, 0, 0.001f);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}

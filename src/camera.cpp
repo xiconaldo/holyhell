@@ -176,7 +176,7 @@ void Camera::translate(float x, float y, float z){
  *                no eixo y.
  * @param zc      indica se a câmera deve (!0) ou não deve (0) ser rotacionada
  *                no eixo z.
- * @param degrees ângulo em graus que a câmera deve rotacionar nos eixos especificados.
+ * @param degrees ângulo em radianos que a câmera deve rotacionar nos eixos especificados.
  */
 void Camera::rotate(int xc, int yc, int zc, float degrees){
 	if(xc) rotation.x += degrees;
@@ -234,8 +234,8 @@ void Camera::makeActiveOnLocation(GLuint uniformLocation){
 }
 
 /**
- * Atualiza apenas a parte da matriz referente às translações e rotações 
- * feitas na câmera.
+ * Atualiza apenas a cópia local da parte da matriz referente às translações 
+ * e rotações feitas na câmera.
  */
 void Camera::updateView(){
 
@@ -248,6 +248,10 @@ void Camera::updateView(){
 	updateViewMatrix();
 }
 
+/**
+ * Associa os dados da cópia local da matriz view com a 
+ * variável uniforme especificada previamente.
+ */
 void Camera::updateViewMatrix(){
 	glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(m_view));
 }

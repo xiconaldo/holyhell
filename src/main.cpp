@@ -113,7 +113,6 @@ int main(int argc, const char* argv[]){
 	//glEnable(GL_DEPTH_TEST);
 	Camera camera;
 	camera.makeActiveOnProgram(program);
-	monkey.rotate(6.28f, 0.0f, 0.0f, 1.0f);
 
 	///////////////
 	// Main Loop //
@@ -137,6 +136,7 @@ int main(int argc, const char* argv[]){
 		//monkey.scale(1.01f, 1.01f, 1.01f);
 		
 		//monkey.makeActiveOnProgram(program);
+		monkey.rotate(0, 0, 1, 0.001f);
 		monkey.draw();
 
 		glfwSwapBuffers(window);

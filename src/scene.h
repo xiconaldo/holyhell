@@ -11,7 +11,7 @@
  * como personagens, câmera, fontes de luz e objetos estáticos.
  *
  * TODO:
- * 		-> Classe para objetos estáticos, que deve conter os vértices,
+ * 		+ Classe para objetos estáticos, que deve conter os vértices,
  * 		as normais e as coordenadas de textura dos objetos. Também é
  * 		necessário armazenar o local em disco onde se encontra estas
  * 		informações, além dos arquivos de textura. Propriedades
@@ -98,9 +98,9 @@ class Object{
 public:
 	Object();
 
-	GLuint loadData(const std::string& object_name);
+	void loadData(const std::string& object_name);
 
-	void rotate(float degrees, float xc, float yc, float zc);
+	void rotate(int xc, int yc, int zc, float degrees);
 
 	void translate(float x, float y, float z);
 
@@ -110,24 +110,27 @@ public:
 
 	void makeActiveOnLocation(GLuint vertexLocation, GLuint normalLocation, GLuint uniformLocation);
 
+	void resetMatrix();
+
 	void draw();
 
 	static void setBaseDataLocation(const std::string& location);
 
-	void resetModel();
-
 private:
-	GLuint vertex_buffer;
-	glm::mat4 m_model = glm::mat4();
+	
 	std::string data_location;
-	int triangle_count;
 	static std::string base_data_location;
+	int triangle_count;
+
+	glm::vec3 translation = glm::vec3(0.0f);
+	glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 scalation = glm::vec3(1.0f);
+	glm::mat4 m_model = glm::mat4(1.0f);
+
+	GLuint vertex_buffer;
 	GLuint model_location;
 	GLuint vertex_location;
 	GLuint normal_location;
-	glm::vec3 translation = glm::vec3(0.0f);
-	glm::quat rotation = glm::angleAxis(0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::vec3 scalation = glm::vec3(1.0f);
 
 	void updateModelMatrix();
 	void updateModel();

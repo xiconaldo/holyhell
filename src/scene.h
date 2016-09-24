@@ -31,6 +31,7 @@
  * 		através de interação.
  */
 
+// Camera
 class Camera{
 public:
 	Camera();
@@ -69,6 +70,10 @@ public:
 
 	void resetMatrix();
 
+	void makeActiveOnProgram(GLuint program);
+
+	void makeActiveOnLocation(GLuint uniformLocation);
+
 private:
 	glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -79,9 +84,55 @@ private:
 
 	glm::mat4 m_view;
 	glm::mat4 base_view;
+	GLuint view_location;
 
 	void updateView();
 	void updateBaseView();
+	void updateViewMatrix();
 };
+
+
+
+// Object
+class Object{
+public:
+	Object();
+
+	GLuint loadData(const std::string& object_name);
+
+	void rotate(float degrees, float xc, float yc, float zc);
+
+	void translate(float x, float y, float z);
+
+	void scale(float x, float y, float z);
+
+	void makeActiveOnProgram(GLuint program);
+
+	void makeActiveOnLocation(GLuint vertexLocation, GLuint normalLocation, GLuint uniformLocation);
+
+	void draw();
+
+	static void setBaseDataLocation(const std::string& location);
+
+	void resetModel();
+
+private:
+	GLuint vertex_buffer;
+	glm::mat4 m_model = glm::mat4();
+	std::string data_location;
+	int triangle_count;
+	static std::string base_data_location;
+	GLuint model_location;
+	GLuint vertex_location;
+	GLuint normal_location;
+	glm::vec3 translation = glm::vec3(0.0f);
+	glm::quat rotation = glm::angleAxis(0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::vec3 scalation = glm::vec3(1.0f);
+
+	void updateModelMatrix();
+	void updateModel();
+
+};
+
 
 #endif

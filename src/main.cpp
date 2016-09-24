@@ -8,7 +8,6 @@
 #include <vector>
 #include <scene.h>
 
-
 CreateProgram create_program;
 std::string DATA;
 
@@ -23,6 +22,7 @@ void initDirectories(const char *location){
 	DATA = DATA + "../data/";
 	TEXTURES = TEXTURES + "../textures/";
 	create_program.baseLocation = SHADERS;
+	Object::setBaseDataLocation(DATA);
 }
 
 ////////////////////////
@@ -89,25 +89,31 @@ int main(int argc, const char* argv[]){
 	GLuint program = create_program(2, flags, names);
 	glUseProgram(program);
 
-	std::vector<Vertex> data;
-	int tr_count;
-	load_grouped_data(DATA + "monkey.obj", tr_count, data);
+	//std::vector<Vertex> data;
+	//int tr_count;
+	//load_grouped_data(DATA + "monkey.obj", tr_count, data);
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	GLuint buffer;
+	/*GLuint buffer;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), (void*)data.data(), GL_STATIC_DRAW);
-	glPointSize(5.0f);
+	glPointSize(5.0f);*/
+
+	Object monkey;
+	monkey.loadData("monkey.obj");
+	monkey.makeActiveOnProgram(program);
 
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_CLAMP);
 	//glEnable(GL_DEPTH_TEST);
 	Camera camera;
+	camera.makeActiveOnProgram(program);
+	monkey.rotate(6.28f, 0.0f, 0.0f, 1.0f);
 
 	///////////////
 	// Main Loop //
@@ -121,13 +127,18 @@ int main(int argc, const char* argv[]){
 		//GLfloat min = 0xffffffff;
 		//glClearBufferfv(GL_DEPTH, 0, &min);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normals));
-		glEnableVertexAttribArray(1);
-		glDrawArrays(GL_TRIANGLES, 0, 3*tr_count);
+		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
+		//glEnableVertexAttribArray(0);
+		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normals));
+		//glEnableVertexAttribArray(1);
+		//glDrawArrays(GL_TRIANGLES, 0, 3*tr_count);
 		
-		camera.rotate(0, 0, 1, 0.01f);
+		//camera.rotate(0, 0, 1, 0.01f);
+		//monkey.scale(1.01f, 1.01f, 1.01f);
+		
+		//monkey.makeActiveOnProgram(program);
+		monkey.draw();
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}

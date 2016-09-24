@@ -1,11 +1,10 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include <iostream>
+#include <vector>
 #include <loader.h>
 #include <shader.h>
-#include <vector>
 #include <scene.h>
 
 CreateProgram create_program;
@@ -107,12 +106,20 @@ int main(int argc, const char* argv[]){
 	monkey.loadData("monkey.obj");
 	monkey.makeActiveOnProgram(program);
 
-	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_CLAMP);
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	Camera camera;
 	camera.makeActiveOnProgram(program);
+
+	float d = 2.0f;
+	glm::mat4 perspec = glm::mat4(1.0f);
+	perspec[2].w = -1/d;
+	perspec[3].z = d;
+	glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(perspec));
+	monkey.translate(0, 0, -0.5);
+	glDepthFunc(GL_GREATER);
 
 	///////////////
 	// Main Loop //
@@ -123,20 +130,14 @@ int main(int argc, const char* argv[]){
 		const GLfloat background_color[] = {1.0f, 1.0f , 1.0f, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
 
-		//GLfloat min = 0xffffffff;
-		//glClearBufferfv(GL_DEPTH, 0, &min);
-
-		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
-		//glEnableVertexAttribArray(0);
-		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normals));
-		//glEnableVertexAttribArray(1);
-		//glDrawArrays(GL_TRIANGLES, 0, 3*tr_count);
+		GLfloat min = 0.0f;
+		glClearBufferfv(GL_DEPTH, 0, &min);
 		
 		//camera.rotate(0, 0, 1, 0.01f);
 		//monkey.scale(1.01f, 1.01f, 1.01f);
 		
 		//monkey.makeActiveOnProgram(program);
-		monkey.rotate(0, 0, 1, 0.001f);
+		monkey.rotate(0, 1, 0, 0.001f);
 		monkey.draw();
 
 		glfwSwapBuffers(window);

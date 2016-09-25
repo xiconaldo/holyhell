@@ -7,13 +7,15 @@
 #include <shader.h>
 #include <scene.h>
 
+#define KTX_OPENGL 1
+#include <ktx.h>
+
 CreateProgram create_program;
-std::string DATA;
+std::string TEXTURES;
 
 void initDirectories(const char *location){
 	std::string SHADERS;
-	//std::string DATA;
-	std::string TEXTURES;
+	std::string DATA;
 	std::string str_location(location);
 	str_location = str_location.substr(0, str_location.rfind('/')+1);
 	SHADERS = DATA = TEXTURES = str_location;
@@ -120,6 +122,10 @@ int main(int argc, const char* argv[]){
 	glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(perspec));
 	monkey.translate(0, 0, -0.5);
 	glDepthFunc(GL_GREATER);
+
+	GLuint texture;
+	ktxLoadTextureN((TEXTURES + "grass.ktx").c_str(), &texture, NULL, NULL, NULL, NULL, NULL, NULL);
+	std::cout << texture << std::endl;
 
 	///////////////
 	// Main Loop //

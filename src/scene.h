@@ -5,6 +5,8 @@
 #include <loader.h>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#define KTX_OPENGL 1
+#include <ktx.h>
 
 /**
  * Conjunto de objetos que representam objetos da cena, tais
@@ -116,11 +118,12 @@ public:
 
 	static void setBaseDataLocation(const std::string& location);
 
-private:
+protected:
 	
 	std::string data_location;
 	static std::string base_data_location;
 	int triangle_count;
+	std::vector<Vertex> data;
 
 	glm::vec3 translation = glm::vec3(0.0f);
 	glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -135,6 +138,20 @@ private:
 	void updateModelMatrix();
 	void updateModel();
 
+};
+
+
+// Terreno
+class Terrain : public Object{
+public:
+	Terrain();
+	void loadData(const std::string& object_name, const std::string& text_name);
+	void draw();
+	static void setBaseTextLocation(const std::string& location);
+
+private:
+	GLuint text_map;
+	static std::string base_text_location;
 };
 
 

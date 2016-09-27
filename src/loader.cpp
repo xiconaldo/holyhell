@@ -365,5 +365,7 @@ std::string load_shader(const std::string& file_name){
 
 	file.close();
 
+	//std::cout << code << std::endl;
+
 	return code;
 }

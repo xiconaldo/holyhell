@@ -10,7 +10,7 @@ Object::Object(){}
  * @param object_name nome do arquivo onde se encontram os dados.
  */
 void Object::loadData(const std::string& object_name){
-	std::vector<Vertex> data;
+
 	load_grouped_data(base_data_location + object_name, triangle_count, data);
 
 	glGenBuffers(1, &vertex_buffer);
@@ -77,6 +77,9 @@ void Object::makeActiveOnProgram(GLuint program){
 	vertex_location = glGetAttribLocation(program, "vertex");
 	normal_location = glGetAttribLocation(program, "normal");
 	model_location = glGetUniformLocation(program, "model");
+
+	std::cout << (glIsProgram(program) ? "OK" : "Deu ruim") << std::endl;
+	std::cout << vertex_location << " " << normal_location << " " << model_location << std::endl;
 
 	glVertexAttribPointer(vertex_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
 	glEnableVertexAttribArray(vertex_location);

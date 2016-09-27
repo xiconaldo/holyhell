@@ -24,6 +24,7 @@ void initDirectories(const char *location){
 	TEXTURES = TEXTURES + "../textures/";
 	create_program.baseLocation = SHADERS;
 	Object::setBaseDataLocation(DATA);
+	Terrain::setBaseTextLocation(TEXTURES);
 }
 
 ////////////////////////
@@ -85,47 +86,25 @@ int main(int argc, const char* argv[]){
 	//////////////////////
 	// Program begining //
 	//////////////////////
+	GLenum ter_flags[] = {GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_FRAGMENT_SHADER};
+	std::string ter_names[] = {"terrain_vertex.glsl", "terrain_tess_ct.glsl", "terrain_tess_ev.glsl", "terrain_frag.glsl"};
+	GLuint ter_program = create_program(4, ter_flags, ter_names);
+	glUseProgram(ter_program);
+
 	GLenum flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 	std::string names[] = {"default_vertex.glsl", "default_frag.glsl"};
-	GLuint program = create_program(2, flags, names);
-	glUseProgram(program);
-
-	//std::vector<Vertex> data;
-	//int tr_count;
-	//load_grouped_data(DATA + "monkey.obj", tr_count, data);
+	GLuint simple_program = create_program(2, flags, names);
+	glUseProgram(simple_program);
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	/*GLuint buffer;
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), (void*)data.data(), GL_STATIC_DRAW);
-	glPointSize(5.0f);*/
-
-	Object monkey;
-	monkey.loadData("monkey.obj");
-	monkey.makeActiveOnProgram(program);
-
-	//glCullFace(GL_BACK);
-	//glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_CLAMP);
-	glEnable(GL_DEPTH_TEST);
-	Camera camera;
-	camera.makeActiveOnProgram(program);
-
-	float d = 2.0f;
-	glm::mat4 perspec = glm::mat4(1.0f);
-	perspec[2].w = -1/d;
-	perspec[3].z = d;
-	glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(perspec));
-	monkey.translate(0, 0, -0.5);
-	glDepthFunc(GL_GREATER);
-
-	GLuint texture;
-	ktxLoadTextureN((TEXTURES + "grass.ktx").c_str(), &texture, NULL, NULL, NULL, NULL, NULL, NULL);
-	std::cout << texture << std::endl;
+	Object ico;
+	ico.loadData("ico.obj");
+	ico.makeActiveOnProgram(simple_program);
+	
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	///////////////
 	// Main Loop //
@@ -136,15 +115,16 @@ int main(int argc, const char* argv[]){
 		const GLfloat background_color[] = {1.0f, 1.0f , 1.0f, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
 
-		GLfloat min = 0.0f;
-		glClearBufferfv(GL_DEPTH, 0, &min);
+	//	GLfloat min = 0.0f;
+	//	glClearBufferfv(GL_DEPTH, 0, &min);
 		
-		//camera.rotate(0, 0, 1, 0.01f);
-		//monkey.scale(1.01f, 1.01f, 1.01f);
+		//glDrawArrays(GL_PATCHES, 0, 6);
+		//iso.translate(0,0.001,0.0001);
+		ico.rotate(1,1,1,0.001);
+		//c.rotate(1,0,0, 0.001);
+		//ico.scale(1.1, 1.1, 1.1);
+		ico.draw();
 		
-		//monkey.makeActiveOnProgram(program);
-		monkey.rotate(0, 1, 0, 0.001f);
-		monkey.draw();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

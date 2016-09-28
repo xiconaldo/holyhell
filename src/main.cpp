@@ -89,22 +89,36 @@ int main(int argc, const char* argv[]){
 	GLenum ter_flags[] = {GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_FRAGMENT_SHADER};
 	std::string ter_names[] = {"terrain_vertex.glsl", "terrain_tess_ct.glsl", "terrain_tess_ev.glsl", "terrain_frag.glsl"};
 	GLuint ter_program = create_program(4, ter_flags, ter_names);
-	glUseProgram(ter_program);
 
 	GLenum flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 	std::string names[] = {"default_vertex.glsl", "default_frag.glsl"};
 	GLuint simple_program = create_program(2, flags, names);
-	glUseProgram(simple_program);
+	//glUseProgram(simple_program);
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
+	/////////////
+	// Objects //
+	/////////////
+
 	Object ico;
 	ico.loadData("ico.obj");
 	ico.makeActiveOnProgram(simple_program);
+
+	GLuint vao2;
+	glGenVertexArrays(1, &vao2);
+	glBindVertexArray(vao2);
 	
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	Terrain t;
+	t.loadData("plane.obj", "map.ktx");
+	t.makeActiveOnProgram(ter_program);
+	t.scale(0.8f, 0.8f, 1.0f);
+	
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPatchParameteri(GL_PATCH_VERTICES, 4);
+	glEnable(GL_DEPTH_CLAMP);
 
 	///////////////
 	// Main Loop //
@@ -120,10 +134,16 @@ int main(int argc, const char* argv[]){
 		
 		//glDrawArrays(GL_PATCHES, 0, 6);
 		//iso.translate(0,0.001,0.0001);
-		ico.rotate(1,1,1,0.001);
+		//ico.rotate(1,1,1,0.001);
 		//c.rotate(1,0,0, 0.001);
 		//ico.scale(1.1, 1.1, 1.1);
+		glBindVertexArray(vao);
+		glUseProgram(simple_program);
 		ico.draw();
+		glBindVertexArray(vao2);
+		glUseProgram(ter_program);
+		t.rotate(1,1,1, 0.005);
+		t.draw();
 		
 
 		glfwSwapBuffers(window);

@@ -72,14 +72,9 @@ void Object::scale(float x, float y, float z){
  */
 void Object::makeActiveOnProgram(GLuint program){
 
-	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-
 	vertex_location = glGetAttribLocation(program, "vertex");
 	normal_location = glGetAttribLocation(program, "normal");
 	model_location = glGetUniformLocation(program, "model");
-
-	std::cout << (glIsProgram(program) ? "OK" : "Deu ruim") << std::endl;
-	std::cout << vertex_location << " " << normal_location << " " << model_location << std::endl;
 
 	glVertexAttribPointer(vertex_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
 	glEnableVertexAttribArray(vertex_location);
@@ -101,8 +96,6 @@ void Object::makeActiveOnProgram(GLuint program){
  *                       à matriz model.
  */
 void Object::makeActiveOnLocation(GLuint vertexLocation, GLuint normalLocation, GLuint modelLocation){
-
-	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 
 	vertex_location = vertexLocation;
 	normal_location = normalLocation;

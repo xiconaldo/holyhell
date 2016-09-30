@@ -77,8 +77,8 @@ public:
 	void makeActiveOnLocation(GLuint uniformLocation);
 
 private:
-	glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
+	//glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	//glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	glm::vec3 position;
 	glm::vec3 lookAt;
@@ -88,7 +88,7 @@ private:
 	glm::mat4 base_view;
 	GLuint view_location;
 
-	void updateView();
+	//void updateView();
 	void updateBaseView();
 	void updateViewMatrix();
 };

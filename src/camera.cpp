@@ -163,8 +163,8 @@ void Camera::setUp(float upX, float upY, float upZ){
  * @param z translação em z em graus.
  */
 void Camera::translate(float x, float y, float z){
-	translation += glm::vec3(x, y, z);
-	updateView();
+	m_view = glm::translate(-glm::vec3(x, y, z)) * m_view;
+	updateViewMatrix();
 }
 
 /**
@@ -179,18 +179,14 @@ void Camera::translate(float x, float y, float z){
  * @param degrees ângulo em radianos que a câmera deve rotacionar nos eixos especificados.
  */
 void Camera::rotate(int xc, int yc, int zc, float degrees){
-	if(xc) rotation.x += degrees;
-	if(yc) rotation.y += degrees;
-	if(zc) rotation.z += degrees;
-	updateView();
+	m_view = glm::rotate(-degrees, glm::vec3(xc, yc, zc)) * m_view;
+	updateViewMatrix();
 }
 
 /**
  * Zera todas as rotações e translações acumuladas na matriz da câmera.
  */
 void Camera::resetMatrix(){
-	translation = glm::vec3();
-	rotation = glm::vec3();
 	m_view = base_view;
 }
 
@@ -211,8 +207,9 @@ void Camera::updateBaseView(){
 	base_view[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	base_view = glm::transpose(base_view);
+	m_view = base_view;
 
-	updateView();
+	updateViewMatrix();
 }
 
 /**
@@ -230,22 +227,6 @@ void Camera::makeActiveOnProgram(GLuint program){
  */
 void Camera::makeActiveOnLocation(GLuint uniformLocation){
 	view_location = uniformLocation;
-	updateViewMatrix();
-}
-
-/**
- * Atualiza apenas a cópia local da parte da matriz referente às translações 
- * e rotações feitas na câmera.
- */
-void Camera::updateView(){
-
-	m_view = glm::translate(-translation) *
-			 glm::rotate(-rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)) *
-			 glm::rotate(-rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
-			 glm::rotate(-rotation.z, glm::vec3(0.0f, 0.0f, 1.0f)) *
-			 //glm::translate(-translation) *	
-			 base_view;
-
 	updateViewMatrix();
 }
 

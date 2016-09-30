@@ -43,10 +43,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
 	if (key == GLFW_KEY_LEFT && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->rotate(0, 0, 1, 0.01);
+		c->rotate(0, 1, 0, 0.01);
 
 	if (key == GLFW_KEY_RIGHT && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->rotate(0, 0, 1, -0.01);
+		c->rotate(0, 1, 0, -0.01);
 
 	if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS || action == GLFW_REPEAT))
 		c->rotate(1, 0, 0, 0.01);

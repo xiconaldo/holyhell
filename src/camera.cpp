@@ -243,6 +243,7 @@ void Camera::updateView(){
 			 glm::rotate(-rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)) *
 			 glm::rotate(-rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
 			 glm::rotate(-rotation.z, glm::vec3(0.0f, 0.0f, 1.0f)) *
+			 //glm::translate(-translation) *	
 			 base_view;
 
 	updateViewMatrix();

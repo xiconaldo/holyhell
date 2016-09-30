@@ -11,17 +11,19 @@
 #include <ktx.h>
 
 CreateProgram create_program;
-std::string TEXTURES;
+Camera *c;
+float d = 0.2f;
+glm::mat4 proj;
 
 void initDirectories(const char *location){
 	std::string SHADERS;
 	std::string DATA;
+	std::string TEXTURES;
 	std::string str_location(location);
 	str_location = str_location.substr(0, str_location.rfind('/')+1);
-	SHADERS = DATA = TEXTURES = str_location;
-	SHADERS = SHADERS + "../shaders/";
-	DATA = DATA + "../data/";
-	TEXTURES = TEXTURES + "../textures/";
+	SHADERS = str_location + "../shaders/";
+	DATA = str_location + "../data/";
+	TEXTURES = str_location + "../textures/";
 	create_program.baseLocation = SHADERS;
 	Object::setBaseDataLocation(DATA);
 	Terrain::setBaseTextLocation(TEXTURES);
@@ -39,6 +41,32 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
+
+	if (key == GLFW_KEY_LEFT && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		c->rotate(0, 0, 1, 0.01);
+
+	if (key == GLFW_KEY_RIGHT && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		c->rotate(0, 0, 1, -0.01);
+
+	if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		c->rotate(1, 0, 0, 0.01);
+
+	if (key == GLFW_KEY_UP && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		c->rotate(1, 0, 0, -0.01);
+
+	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT)){
+		d += 0.001;
+		c->translate(0, 0, -0.01f);
+		proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.1f);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+	}
+
+	if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT)){
+		d -= 0.001;
+		c->translate(0, 0, 0.01f);
+		proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.1f);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+	}
 }
 
 
@@ -61,7 +89,7 @@ int main(int argc, const char* argv[]){
 	///////////////////////////
 	// Window Initialization //
 	///////////////////////////
-	GLFWwindow* window = glfwCreateWindow(600, 600, "Projeto de Computação Gráfica", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(1366, 768, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
 	
 	if (!window){
 		glfwTerminate();
@@ -94,18 +122,19 @@ int main(int argc, const char* argv[]){
 	std::string names[] = {"default_vertex.glsl", "default_frag.glsl"};
 	GLuint simple_program = create_program(2, flags, names);
 	//glUseProgram(simple_program);
-
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	
 
 	/////////////
 	// Objects //
 	/////////////
 
+	/*GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
 	Object ico;
 	ico.loadData("ico.obj");
-	ico.makeActiveOnProgram(simple_program);
+	ico.makeActiveOnProgram(simple_program);*/
 
 	GLuint vao2;
 	glGenVertexArrays(1, &vao2);
@@ -115,7 +144,13 @@ int main(int argc, const char* argv[]){
 	t.loadData("plane.obj", "map.ktx");
 	t.makeActiveOnProgram(ter_program);
 	t.scale(0.8f, 0.8f, 1.0f);
-	
+
+	c = new Camera();
+	c->makeActiveOnProgram(ter_program);
+
+	proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.1f);
+	glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 	glEnable(GL_DEPTH_CLAMP);
@@ -137,12 +172,12 @@ int main(int argc, const char* argv[]){
 		//ico.rotate(1,1,1,0.001);
 		//c.rotate(1,0,0, 0.001);
 		//ico.scale(1.1, 1.1, 1.1);
-		glBindVertexArray(vao);
+		/*glBindVertexArray(vao);
 		glUseProgram(simple_program);
-		ico.draw();
+		ico.draw();*/
 		glBindVertexArray(vao2);
 		glUseProgram(ter_program);
-		t.rotate(1,1,1, 0.005);
+		//t.rotate(1,1,1, 0.005);
 		t.draw();
 		
 

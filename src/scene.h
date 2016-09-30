@@ -151,6 +151,7 @@ public:
 
 private:
 	GLuint text_map;
+	GLuint text_image;
 	static std::string base_text_location;
 };
 

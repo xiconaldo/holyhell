@@ -11,23 +11,21 @@ Terrain::Terrain(){}
  */
 void Terrain::loadData(const std::string& object_name, const std::string& text_name){
 	load_grouped_data(base_data_location + object_name, triangle_count, data);
-	//data.pop_back();
-	//data.pop_back();
-
-	std::cout << base_data_location + object_name << std::endl;
-	std::cout << base_text_location + text_name << std::endl;
 
 	glGenBuffers(1, &vertex_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * data.size(), (void*)data.data(), GL_STATIC_DRAW);
 
 	GLenum text;
+	glActiveTexture(GL_TEXTURE0);
+	KTX_error_code_t error = ktxLoadTextureN((base_text_location + "grass.ktx").c_str(), &text_image, &text, NULL, NULL, NULL, NULL, NULL);
+
 	glActiveTexture(GL_TEXTURE1);
-	KTX_error_code_t error = ktxLoadTextureN((base_text_location + text_name).c_str(), &text_map, &text, NULL, NULL, NULL, NULL, NULL);
+	error = ktxLoadTextureN((base_text_location + text_name).c_str(), &text_map, &text, NULL, NULL, NULL, NULL, NULL);
 	
 	switch(error){
 		case KTX_SUCCESS:
-			std::cout << "KTX_SUCCESS" << std::endl;
+			//std::cout << "KTX_SUCCESS" << std::endl;
 			break;
 		case KTX_FILE_OPEN_FAILED:
 			std::cout << "KTX_FILE_OPEN_FAILED" << std::endl;

@@ -12,7 +12,7 @@
 
 CreateProgram create_program;
 Camera *c;
-float d = 0.2f;
+float d = 0.1f;
 glm::mat4 proj;
 
 void initDirectories(const char *location){
@@ -43,10 +43,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
 	if (key == GLFW_KEY_LEFT && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->rotate(0, 1, 0, 0.01);
+		c->rotate(0, 0, 1, 0.01);
 
 	if (key == GLFW_KEY_RIGHT && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->rotate(0, 1, 0, -0.01);
+		c->rotate(0, 0, 1, -0.01);
 
 	if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS || action == GLFW_REPEAT))
 		c->rotate(1, 0, 0, 0.01);
@@ -54,19 +54,38 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_UP && (action == GLFW_PRESS || action == GLFW_REPEAT))
 		c->rotate(1, 0, 0, -0.01);
 
-	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT)){
-		d += 0.001;
+	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
 		c->translate(0, 0, -0.01f);
-		proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.1f);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-	}
 
-	if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT)){
-		d -= 0.001;
+	if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
 		c->translate(0, 0, 0.01f);
-		proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.1f);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-	}
+
+	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		c->translate(-0.01f, 0, 0);
+
+	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		c->translate(0.01f, 0, 0);
+}
+
+void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos){
+	static double prev_x = 0.0, prev_y = 0.0;
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+
+	if(xpos-prev_x < 0)
+		c->rotate(0, 1, 0, 0.02);
+
+	if(xpos-prev_x > 0)
+		c->rotate(0, 1, 0, -0.02);
+
+	if(ypos-prev_y < 0)
+		c->rotate(1, 0, 0, 0.02);
+
+	if(ypos-prev_y > 0)
+		c->rotate(1, 0, 0, -0.02);
+
+	prev_x = xpos;
+	prev_y = ypos;
 }
 
 
@@ -101,6 +120,9 @@ int main(int argc, const char* argv[]){
 	glfwMakeContextCurrent(window);
 	glfwSetErrorCallback(error_callback);
 	glfwSetKeyCallback(window, key_callback);
+	glfwSetCursorPosCallback(window, cursor_pos_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
 	/////////////////////////
 	// GLEW Initialization //
@@ -122,7 +144,6 @@ int main(int argc, const char* argv[]){
 	std::string names[] = {"default_vertex.glsl", "default_frag.glsl"};
 	GLuint simple_program = create_program(2, flags, names);
 	//glUseProgram(simple_program);
-	
 
 	/////////////
 	// Objects //
@@ -145,13 +166,16 @@ int main(int argc, const char* argv[]){
 	t.makeActiveOnProgram(ter_program);
 	t.scale(0.8f, 0.8f, 1.0f);
 
-	c = new Camera();
-	c->makeActiveOnProgram(ter_program);
-
+	c = new Camera(0, 0, 0, 0, 0, 1);
 	proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.1f);
+	
+	glUseProgram(ter_program);
+
+	// Camera e projection setada apenas no programa em uso
+	c->makeActiveOnProgram(ter_program);
 	glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 	glEnable(GL_DEPTH_CLAMP);
 
@@ -167,17 +191,8 @@ int main(int argc, const char* argv[]){
 	//	GLfloat min = 0.0f;
 	//	glClearBufferfv(GL_DEPTH, 0, &min);
 		
-		//glDrawArrays(GL_PATCHES, 0, 6);
-		//iso.translate(0,0.001,0.0001);
-		//ico.rotate(1,1,1,0.001);
-		//c.rotate(1,0,0, 0.001);
-		//ico.scale(1.1, 1.1, 1.1);
-		/*glBindVertexArray(vao);
-		glUseProgram(simple_program);
-		ico.draw();*/
 		glBindVertexArray(vao2);
 		glUseProgram(ter_program);
-		//t.rotate(1,1,1, 0.005);
 		t.draw();
 		
 

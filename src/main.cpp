@@ -14,6 +14,9 @@ CreateProgram create_program;
 Camera *c;
 float d = 0.1f;
 glm::mat4 proj;
+glm::vec4 light = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
+glm::mat4 rotP = glm::rotate(0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
+glm::mat4 rotN = glm::rotate(-0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
 
 void initDirectories(const char *location){
 	std::string SHADERS;
@@ -63,8 +66,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT))
 		c->translate(-0.01f, 0, 0);
 
-	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->translate(0.01f, 0, 0);
+	if (key == GLFW_KEY_U && (action == GLFW_PRESS || action == GLFW_REPEAT)){
+		light = rotP * light;
+		glUniform3fv(3, 1, glm::value_ptr(light));
+	}
+
+	if (key == GLFW_KEY_I && (action == GLFW_PRESS || action == GLFW_REPEAT)){
+		light = rotN * light;
+		glUniform3fv(3, 1, glm::value_ptr(light));
+	}
 }
 
 void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos){
@@ -164,7 +174,7 @@ int main(int argc, const char* argv[]){
 	Terrain t;
 	t.loadData("plane.obj", "map.ktx");
 	t.makeActiveOnProgram(ter_program);
-	t.scale(0.8f, 0.8f, 1.0f);
+	//t.scale(0.8f, 0.8f, 1.0f);
 
 	c = new Camera(0, 0, 0, 0, 0, 1);
 	proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.1f);
@@ -174,10 +184,12 @@ int main(int argc, const char* argv[]){
 	// Camera e projection setada apenas no programa em uso
 	c->makeActiveOnProgram(ter_program);
 	glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+	glUniform3fv(3, 1, glm::value_ptr(light));
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 	glEnable(GL_DEPTH_CLAMP);
+	glEnable(GL_DEPTH_TEST);
 
 	///////////////
 	// Main Loop //
@@ -188,8 +200,8 @@ int main(int argc, const char* argv[]){
 		const GLfloat background_color[] = {1.0f, 1.0f , 1.0f, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
 
-	//	GLfloat min = 0.0f;
-	//	glClearBufferfv(GL_DEPTH, 0, &min);
+		GLfloat min = 0xFFFFFFFF;
+		glClearBufferfv(GL_DEPTH, 0, &min);
 		
 		glBindVertexArray(vao2);
 		glUseProgram(ter_program);

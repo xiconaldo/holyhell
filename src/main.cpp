@@ -75,6 +75,20 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		light = rotN * light;
 		glUniform3fv(3, 1, glm::value_ptr(light));
 	}
+
+	/*if (key == GLFW_KEY_W && (action == GLFW_PRESS)){
+		std::cout << "Apertou W" << std::endl;
+	}
+	if (key == GLFW_KEY_A && (action == GLFW_PRESS)){
+		std::cout << "Apertou A" << std::endl;
+	}
+
+	if (key == GLFW_KEY_W && (action == GLFW_RELEASE)){
+		std::cout << "Soltou W" << std::endl;
+	}
+	if (key == GLFW_KEY_A && (action == GLFW_RELEASE)){
+		std::cout << "Soltou A" << std::endl;
+	}*/
 }
 
 void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos){
@@ -118,7 +132,9 @@ int main(int argc, const char* argv[]){
 	///////////////////////////
 	// Window Initialization //
 	///////////////////////////
-	GLFWwindow* window = glfwCreateWindow(1366, 768, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
+	//GLFWwindow* window = glfwCreateWindow(800, 600, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
+	GLFWwindow* window = glfwCreateWindow(1024, 768, "Projeto de Computação Gráfica", NULL, NULL);
+	//GLFWwindow* window = glfwCreateWindow(1366, 768, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
 	
 	if (!window){
 		glfwTerminate();
@@ -132,7 +148,7 @@ int main(int argc, const char* argv[]){
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, cursor_pos_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+	//glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
 	/////////////////////////
 	// GLEW Initialization //

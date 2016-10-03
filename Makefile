@@ -1,22 +1,20 @@
-CXX = g++
-CXXFLAGS = -std=c++11
-CXXFLAGS_DEBUG = $(CXXFLAGS) -g3
-LDLIBS = -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -lpthread -ldl -lktx.gl
-SOURCES = src/main.cpp src/loader.cpp src/shader.cpp src/camera.cpp src/object.cpp src/terrain.cpp
-OBJECTS = $(SOURCES:.cpp=.o)
-EXECUTABLE = bin/sword.run
-INC = -Isrc -Iinclude
+ifdef SYSTEMROOT
+	MAKENAME = win.mk
+else
+	ifeq ($(shell uname), Linux)
+		MAKENAME = linux.mk
+	endif
+endif
 
-sword: $(OBJECTS)
-	$(CXX) $(OBJECTS) $(CXXFLAGS) $(LDLIBS) $(INC) -o $(EXECUTABLE)
-	$(EXECUTABLE)
 
-%.o: %.cpp
-	$(CXX) $^ $(CXXFLAGS) $(INC) -c -o $@
+sword:
+	make -f $(MAKENAME) $@
+
+%.o:
+	make -f $(MAKENAME) $@
 
 debug:
-	$(CXX) $(SOURCES) $(CXXFLAGS_DEBUG) $(LIBDIR) $(LDLIBS) $(INC) -o $(EXECUTABLE)
-	gdb $(EXECUTABLE)
+	make -f $(MAKENAME) $@
 
 clear:
-	rm -f bin/* src/*.o
+	make -f $(MAKENAME) $@

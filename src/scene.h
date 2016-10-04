@@ -74,11 +74,7 @@ public:
 
 	void makeActiveOnProgram(GLuint program);
 
-	void makeActiveOnLocation(GLuint uniformLocation);
-
 private:
-	//glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	//glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	glm::vec3 position;
 	glm::vec3 lookAt;
@@ -87,6 +83,7 @@ private:
 	glm::mat4 m_view;
 	glm::mat4 base_view;
 	GLuint view_location;
+	GLuint program;
 
 	//void updateView();
 	void updateBaseView();
@@ -110,8 +107,6 @@ public:
 
 	void makeActiveOnProgram(GLuint program);
 
-	void makeActiveOnLocation(GLuint vertexLocation, GLuint normalLocation, GLuint uniformLocation);
-
 	void resetMatrix();
 
 	void draw();
@@ -134,6 +129,8 @@ protected:
 	GLuint model_location;
 	GLuint vertex_location;
 	GLuint normal_location;
+	GLuint vao;
+	GLuint program;
 
 	void updateModelMatrix();
 	void updateModel();

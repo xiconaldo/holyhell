@@ -12,6 +12,9 @@ Terrain::Terrain(){}
 void Terrain::loadData(const std::string& object_name, const std::string& text_name){
 	load_grouped_data(base_data_location + object_name, triangle_count, data);
 
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
 	glGenBuffers(1, &vertex_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * data.size(), (void*)data.data(), GL_STATIC_DRAW);
@@ -68,6 +71,7 @@ void Terrain::loadData(const std::string& object_name, const std::string& text_n
 }
 
 void Terrain::draw(){
+	glBindVertexArray(vao);
 	glDrawArrays(GL_PATCHES, 0, 4);
 }
 

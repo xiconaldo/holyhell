@@ -66,6 +66,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT))
 		c->translate(-0.01f, 0, 0);
 
+	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		c->translate(0.01f, 0, 0);
+
 	if (key == GLFW_KEY_U && (action == GLFW_PRESS || action == GLFW_REPEAT)){
 		light = rotP * light;
 		glUniform3fv(3, 1, glm::value_ptr(light));
@@ -76,19 +79,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glUniform3fv(3, 1, glm::value_ptr(light));
 	}
 
-	/*if (key == GLFW_KEY_W && (action == GLFW_PRESS)){
-		std::cout << "Apertou W" << std::endl;
+	if (key == GLFW_KEY_L && action == GLFW_PRESS)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	if (key == GLFW_KEY_K && action == GLFW_PRESS){
+		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+		glPointSize(10.0f);
 	}
-	if (key == GLFW_KEY_A && (action == GLFW_PRESS)){
-		std::cout << "Apertou A" << std::endl;
-	}
-
-	if (key == GLFW_KEY_W && (action == GLFW_RELEASE)){
-		std::cout << "Soltou W" << std::endl;
-	}
-	if (key == GLFW_KEY_A && (action == GLFW_RELEASE)){
-		std::cout << "Soltou A" << std::endl;
-	}*/
+	if (key == GLFW_KEY_M && action == GLFW_PRESS)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos){
@@ -169,43 +167,28 @@ int main(int argc, const char* argv[]){
 	GLenum flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 	std::string names[] = {"default_vertex.glsl", "default_frag.glsl"};
 	GLuint simple_program = create_program(2, flags, names);
-	//glUseProgram(simple_program);
 
 	/////////////
 	// Objects //
 	/////////////
-
-	/*GLuint vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	Object ico;
-	ico.loadData("ico.obj");
-	ico.makeActiveOnProgram(simple_program);*/
-
-	GLuint vao2;
-	glGenVertexArrays(1, &vao2);
-	glBindVertexArray(vao2);
 	
 	Terrain t;
 	t.loadData("plane.obj", "map.ktx");
 	t.makeActiveOnProgram(ter_program);
-	//t.scale(0.8f, 0.8f, 1.0f);
 
 	c = new Camera(0, 0, 0, 0, 0, 1);
 	proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.1f);
 	
-	glUseProgram(ter_program);
-
 	// Camera e projection setada apenas no programa em uso
 	c->makeActiveOnProgram(ter_program);
 	glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 	glUniform3fv(3, 1, glm::value_ptr(light));
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_DEPTH_TEST);
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
 
 	///////////////
 	// Main Loop //
@@ -213,16 +196,13 @@ int main(int argc, const char* argv[]){
 	while (!glfwWindowShouldClose(window))
 	{
 
-		const GLfloat background_color[] = {1.0f, 1.0f , 1.0f, 1.0f};
+		const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
 
 		GLfloat min = 0xFFFFFFFF;
 		glClearBufferfv(GL_DEPTH, 0, &min);
-		
-		glBindVertexArray(vao2);
-		glUseProgram(ter_program);
-		t.draw();
-		
+
+		t.draw();	
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

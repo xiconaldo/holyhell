@@ -217,16 +217,8 @@ void Camera::updateBaseView(){
  * @param program identificador do programa ao qual a câmera será adicionada.
  */
 void Camera::makeActiveOnProgram(GLuint program){
+	this->program = program;
 	view_location = glGetUniformLocation(program, "view");
-	updateViewMatrix();
-}
-
-/**
- * Associa a câmera à variável uniforme fornecida.
- * @param uniformLocation identificador da variável à qual a câmera será associada.
- */
-void Camera::makeActiveOnLocation(GLuint uniformLocation){
-	view_location = uniformLocation;
 	updateViewMatrix();
 }
 
@@ -235,5 +227,6 @@ void Camera::makeActiveOnLocation(GLuint uniformLocation){
  * variável uniforme especificada previamente.
  */
 void Camera::updateViewMatrix(){
+	glUseProgram(program);
 	glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(m_view));
 }

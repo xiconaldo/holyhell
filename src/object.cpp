@@ -13,6 +13,9 @@ void Object::loadData(const std::string& object_name){
 
 	load_grouped_data(base_data_location + object_name, triangle_count, data);
 
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
 	glGenBuffers(1, &vertex_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * data.size(), (void*)data.data(), GL_STATIC_DRAW);
@@ -71,35 +74,11 @@ void Object::scale(float x, float y, float z){
  * @param program programa ao qual os objetos serão associados.
  */
 void Object::makeActiveOnProgram(GLuint program){
+	this->program = program;
 
 	vertex_location = glGetAttribLocation(program, "vertex");
 	normal_location = glGetAttribLocation(program, "normal");
 	model_location = glGetUniformLocation(program, "model");
-
-	glVertexAttribPointer(vertex_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
-	glEnableVertexAttribArray(vertex_location);
-
-	glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normals));
-	glEnableVertexAttribArray(normal_location);
-
-	updateModelMatrix();
-}
-
-/**
- * Associa os valores do vertex buffer e a matriz model aos 
- * atributos e uniformes nas localizações especificadas.
- * @param vertexLocation localização do atributo referente aos
- *                       vértices.
- * @param normalLocation localização do atributo referente às
- *                       normais.
- * @param modelLocation  localização da variável uniforme referente 
- *                       à matriz model.
- */
-void Object::makeActiveOnLocation(GLuint vertexLocation, GLuint normalLocation, GLuint modelLocation){
-
-	vertex_location = vertexLocation;
-	normal_location = normalLocation;
-	model_location = modelLocation;
 
 	glVertexAttribPointer(vertex_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
 	glEnableVertexAttribArray(vertex_location);
@@ -145,6 +124,8 @@ void Object::resetMatrix(){
  * Desenha o objeto na tela.
  */
 void Object::draw(){
+	glUseProgram(program);
+	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 3*triangle_count);
 }
 

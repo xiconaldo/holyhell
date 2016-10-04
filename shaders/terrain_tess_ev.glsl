@@ -1,6 +1,6 @@
 #version 430 core
 
-layout(quads, equal_spacing) in;
+layout(quads, equal_spacing, ccw) in;
 
 layout (location = 0) uniform mat4 model = mat4(1.0f);
 layout (location = 1) uniform mat4 view  = mat4(1.0f);

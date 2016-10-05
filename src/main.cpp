@@ -176,13 +176,12 @@ int main(int argc, const char* argv[]){
 	t.loadData("plane.obj", "map.ktx");
 	t.makeActiveOnProgram(ter_program);
 
+	Object ob;
+	ob.loadData("torus.obj");
+	ob.makeActiveOnProgram(simple_program);
+
 	c = new Camera(0, 0, 0, 0, 0, 1);
-	proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.1f);
-	
-	// Camera e projection setada apenas no programa em uso
-	c->makeActiveOnProgram(ter_program);
-	glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-	glUniform3fv(3, 1, glm::value_ptr(light));
+	proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.1f);	
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 	glEnable(GL_DEPTH_CLAMP);
@@ -202,7 +201,17 @@ int main(int argc, const char* argv[]){
 		GLfloat min = 0xFFFFFFFF;
 		glClearBufferfv(GL_DEPTH, 0, &min);
 
-		t.draw();	
+		
+		glUseProgram(simple_program);
+		c->makeActiveOnProgram(simple_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		ob.draw();	
+		
+		glUseProgram(ter_program);
+		c->makeActiveOnProgram(ter_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		glUniform3fv(3, 1, glm::value_ptr(light));
+		t.draw();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

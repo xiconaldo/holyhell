@@ -124,7 +124,7 @@ void Object::resetMatrix(){
  * Desenha o objeto na tela.
  */
 void Object::draw(){
-	glUseProgram(program);
+	// glUseProgram(program);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 3*triangle_count);
 }

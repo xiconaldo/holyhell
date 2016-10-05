@@ -227,6 +227,6 @@ void Camera::makeActiveOnProgram(GLuint program){
  * variável uniforme especificada previamente.
  */
 void Camera::updateViewMatrix(){
-	glUseProgram(program);
+	//glUseProgram(program);
 	glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(m_view));
 }

@@ -1,4 +1,4 @@
-ifdef SYSTEMROOT
+ifeq ($(OS), Windows_NT)
 	MAKENAME = win.mk
 else
 	ifeq ($(shell uname), Linux)

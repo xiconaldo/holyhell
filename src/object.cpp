@@ -32,13 +32,8 @@ void Object::loadData(const std::string& object_name){
  *                no eixo z.
  * @param degrees ângulo em radianos que o objeto deverá rotacionar.
  */
-void Object::rotate(int xc, int yc, int zc, float degrees){
-	
-	if(xc) rotation.x += degrees;
-	if(yc) rotation.y += degrees;
-	if(zc) rotation.z += degrees;
-
-	updateModel();
+void Object::localRotate(int xc, int yc, int zc, float degrees){
+	m_model = m_model * glm::rotate(degrees, glm::vec3(xc, yc, zc));
 	updateModelMatrix();
 }
 
@@ -49,9 +44,8 @@ void Object::rotate(int xc, int yc, int zc, float degrees){
  * @param y valor da translação no eixo y.
  * @param z valor da translação no eixo z.
  */
-void Object::translate(float x, float y, float z){
-	translation += glm::vec3(x, y, z);
-	updateModel();
+void Object::localTranslate(float x, float y, float z){
+	m_model = m_model * glm::translate(glm::vec3(x, y, z));
 	updateModelMatrix();
 }
 
@@ -62,9 +56,23 @@ void Object::translate(float x, float y, float z){
  * @param y fator de escala no eixo y.
  * @param z fator de escala no eixo z.
  */
+void Object::localScale(float x, float y, float z){
+	m_model = m_model * glm::scale(glm::vec3(x, y, z));
+	updateModelMatrix();
+}
+
+void Object::rotate(int xc, int yc, int zc, float degrees){
+	m_model = glm::rotate(degrees, glm::vec3(xc, yc, zc)) * m_model;
+	updateModelMatrix();
+}
+
+void Object::translate(float x, float y, float z){
+	m_model = glm::translate(glm::vec3(x, y, z)) * m_model;
+	updateModelMatrix();
+}
+
 void Object::scale(float x, float y, float z){
-	scalation *= glm::vec3(x, y, z);
-	updateModel();
+	m_model = glm::scale(glm::vec3(x, y, z)) * m_model;
 	updateModelMatrix();
 }
 
@@ -73,8 +81,7 @@ void Object::scale(float x, float y, float z){
  * respectivos atributos do programa especificado.
  * @param program programa ao qual os objetos serão associados.
  */
-void Object::makeActiveOnProgram(GLuint program){
-	this->program = program;
+void Object::bindProgram(GLuint program){
 
 	vertex_location = glGetAttribLocation(program, "vertex");
 	normal_location = glGetAttribLocation(program, "normal");
@@ -87,17 +94,6 @@ void Object::makeActiveOnProgram(GLuint program){
 	glEnableVertexAttribArray(normal_location);
 
 	updateModelMatrix();
-}
-
-/**
- * Atualiza a cópia local da matriz model.
- */
-void Object::updateModel(){
-	m_model = glm::translate(translation) *
-			  glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)) *
-			  glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
-			  glm::rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f)) *
-			  glm::scale(scalation);
 }
 
 /**
@@ -114,9 +110,6 @@ void Object::updateModelMatrix(){
  * rotação e translação.
  */
 void Object::resetMatrix(){
-	translation = glm::vec3(0.0f);
-	rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	scalation = glm::vec3(1.0f);
 	m_model = glm::mat4(1.0f);
 }
 
@@ -124,7 +117,6 @@ void Object::resetMatrix(){
  * Desenha o objeto na tela.
  */
 void Object::draw(){
-	// glUseProgram(program);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 3*triangle_count);
 }

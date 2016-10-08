@@ -72,7 +72,7 @@ public:
 
 	void resetMatrix();
 
-	void makeActiveOnProgram(GLuint program);
+	void bindProgram(GLuint program);
 
 private:
 
@@ -81,12 +81,10 @@ private:
 	glm::vec3 up;
 
 	glm::mat4 m_view;
-	glm::mat4 base_view;
 	GLuint view_location;
 	GLuint program;
 
 	//void updateView();
-	void updateBaseView();
 	void updateViewMatrix();
 };
 
@@ -99,13 +97,19 @@ public:
 
 	void loadData(const std::string& object_name);
 
+	void localRotate(int xc, int yc, int zc, float degrees);
+
+	void localTranslate(float x, float y, float z);
+
+	void localScale(float x, float y, float z);
+
 	void rotate(int xc, int yc, int zc, float degrees);
 
 	void translate(float x, float y, float z);
 
 	void scale(float x, float y, float z);
 
-	void makeActiveOnProgram(GLuint program);
+	void bindProgram(GLuint program);
 
 	void resetMatrix();
 
@@ -120,9 +124,6 @@ protected:
 	int triangle_count;
 	std::vector<Vertex> data;
 
-	glm::vec3 translation = glm::vec3(0.0f);
-	glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 scalation = glm::vec3(1.0f);
 	glm::mat4 m_model = glm::mat4(1.0f);
 
 	GLuint vertex_buffer;
@@ -133,8 +134,6 @@ protected:
 	GLuint program;
 
 	void updateModelMatrix();
-	void updateModel();
-
 };
 
 

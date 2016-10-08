@@ -12,6 +12,9 @@
 
 CreateProgram create_program;
 Camera *c;
+Terrain *t;
+Object *ob;
+Object *entity;
 float d = 0.1f;
 glm::mat4 proj;
 glm::vec4 light = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
@@ -68,6 +71,18 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
 		c->translate(0.01f, 0, 0);
+
+	if (key == GLFW_KEY_H && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		ob->localTranslate(0.01f, 0, 0);
+
+	if (key == GLFW_KEY_G && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		ob->localTranslate(-0.01f, 0, 0);
+
+	if (key == GLFW_KEY_Y && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		ob->localTranslate(0.0f, 0, 0.01f);
+
+	if (key == GLFW_KEY_B && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		ob->localTranslate(0.0f, 0, -0.01f);
 
 	if (key == GLFW_KEY_U && (action == GLFW_PRESS || action == GLFW_REPEAT)){
 		light = rotP * light;
@@ -168,26 +183,34 @@ int main(int argc, const char* argv[]){
 	std::string names[] = {"default_vertex.glsl", "default_frag.glsl"};
 	GLuint simple_program = create_program(2, flags, names);
 
+	GLenum h_flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
+	std::string h_names[] = {"height_vertex.glsl", "default_frag.glsl"};
+	GLuint height_program = create_program(2, h_flags, h_names);
+
 	/////////////
 	// Objects //
 	/////////////
 	
-	Terrain t;
-	t.loadData("plane.obj", "map.ktx");
-	t.makeActiveOnProgram(ter_program);
+	t = new Terrain;
+	t->loadData("plane.obj", "map.ktx");
+	t->bindProgram(ter_program);
 
-	Object ob;
-	ob.loadData("torus.obj");
-	ob.makeActiveOnProgram(simple_program);
+	ob = new Object;
+	ob->loadData("plane.obj");
+	ob->bindProgram(simple_program);
 
-	c = new Camera(0, 0, 0, 0, 0, 1);
+	entity = new Object;
+	entity->loadData("entity.obj");
+	entity->bindProgram(height_program);
+
+	c = new Camera(0, 0, 2, 0, 0, -1);
 	proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.1f);	
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_DEPTH_TEST);
 	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 
 	///////////////
 	// Main Loop //
@@ -201,18 +224,22 @@ int main(int argc, const char* argv[]){
 		GLfloat min = 0xFFFFFFFF;
 		glClearBufferfv(GL_DEPTH, 0, &min);
 
-		
-		glUseProgram(simple_program);
-		c->makeActiveOnProgram(simple_program);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		ob.draw();	
-		
 		glUseProgram(ter_program);
-		c->makeActiveOnProgram(ter_program);
+		c->bindProgram(ter_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
-		t.draw();
+		t->draw();
 
+		glUseProgram(simple_program);
+		c->bindProgram(simple_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		ob->draw();	
+
+		glUseProgram(height_program);
+		c->bindProgram(height_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		entity->draw();
+		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}

@@ -21,7 +21,7 @@ Camera::Camera(const glm::vec3 &position,
 	lookAt(lookAt),
 	up(up)
 {
-	updateBaseView();
+	resetMatrix();
 }
 
 /**
@@ -47,7 +47,7 @@ Camera::Camera(float positionX, float positionY, float positionZ,
 	lookAt(lookAtX, lookAtY, lookAtZ),
 	up(upX, upY, upZ)
 {
-	updateBaseView();
+	resetMatrix();
 }
 
 /**
@@ -63,7 +63,7 @@ void Camera::setCamera(const glm::vec3 &position,
 	this->position = position;
 	this->lookAt = lookAt;
 	this->up = up;
-	updateBaseView();
+	resetMatrix();
 }
 
 /**
@@ -88,7 +88,7 @@ void Camera::setCamera(float positionX, float positionY, float positionZ,
 	position = glm::vec3(positionX, positionY, positionZ);
 	lookAt = glm::vec3(lookAtX, lookAtY, lookAtZ);
 	up = glm::vec3(upX, upY, upZ);
-	updateBaseView();
+	resetMatrix();
 }
 
 /**
@@ -97,7 +97,7 @@ void Camera::setCamera(float positionX, float positionY, float positionZ,
  */
 void Camera::setPosition(const glm::vec3 &position){
 	this->position = position;
-	updateBaseView();
+	resetMatrix();
 }
 
 /**
@@ -108,7 +108,7 @@ void Camera::setPosition(const glm::vec3 &position){
  */
 void Camera::setPosition(float positionX, float positionY, float positionZ){
 	position = glm::vec3(positionX, positionY, positionZ);
-	updateBaseView();
+	resetMatrix();
 }
 
 /**
@@ -117,7 +117,7 @@ void Camera::setPosition(float positionX, float positionY, float positionZ){
  */
 void Camera::setLookAt(const glm::vec3 &lookAt){
 	this->lookAt = lookAt;
-	updateBaseView();
+	resetMatrix();
 }
 
 /**
@@ -128,7 +128,7 @@ void Camera::setLookAt(const glm::vec3 &lookAt){
  */
 void Camera::setLookAt(float lookAtX, float lookAtY, float lookAtZ){
 	lookAt = glm::vec3(lookAtX, lookAtY, lookAtZ);
-	updateBaseView();
+	resetMatrix();
 }
 
 /**
@@ -137,7 +137,7 @@ void Camera::setLookAt(float lookAtX, float lookAtY, float lookAtZ){
  */
 void Camera::setUp(const glm::vec3 &up){
 	this->up = up;
-	updateBaseView();
+	resetMatrix();
 }
 
 /**
@@ -151,7 +151,7 @@ void Camera::setUp(const glm::vec3 &up){
  */
 void Camera::setUp(float upX, float upY, float upZ){
 	up = glm::vec3(upX, upY, upZ);
-	updateBaseView();
+	resetMatrix();
 }
 
 /**
@@ -184,30 +184,22 @@ void Camera::rotate(int xc, int yc, int zc, float degrees){
 }
 
 /**
- * Zera todas as rotações e translações acumuladas na matriz da câmera.
- */
-void Camera::resetMatrix(){
-	m_view = base_view;
-}
-
-/**
  * Atualiza a matriz gerada pelos atributos da câmera (posição, direção 
  * e up) e pelas transformações de translação e rotação definidas.
  */
-void Camera::updateBaseView(){
+void Camera::resetMatrix(){
 	glm::vec3 xc, yc, zc, pos;
 	zc = glm::normalize(position - lookAt);
 	xc = glm::normalize(glm::cross(up, zc));
 	yc = glm::cross(zc, xc);
 	pos = -position;
 
-	base_view[0] = glm::vec4(xc, glm::dot(xc, pos));
-	base_view[1] = glm::vec4(yc, glm::dot(yc, pos));
-	base_view[2] = glm::vec4(zc, glm::dot(zc, pos));
-	base_view[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	m_view[0] = glm::vec4(xc, glm::dot(xc, pos));
+	m_view[1] = glm::vec4(yc, glm::dot(yc, pos));
+	m_view[2] = glm::vec4(zc, glm::dot(zc, pos));
+	m_view[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	base_view = glm::transpose(base_view);
-	m_view = base_view;
+	m_view = glm::transpose(m_view);
 
 	updateViewMatrix();
 }
@@ -216,8 +208,7 @@ void Camera::updateBaseView(){
  * Faz com que a câmera seja efetivamente usada no programa especificado.
  * @param program identificador do programa ao qual a câmera será adicionada.
  */
-void Camera::makeActiveOnProgram(GLuint program){
-	this->program = program;
+void Camera::bindProgram(GLuint program){
 	view_location = glGetUniformLocation(program, "view");
 	updateViewMatrix();
 }
@@ -227,6 +218,5 @@ void Camera::makeActiveOnProgram(GLuint program){
  * variável uniforme especificada previamente.
  */
 void Camera::updateViewMatrix(){
-	//glUseProgram(program);
 	glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(m_view));
 }

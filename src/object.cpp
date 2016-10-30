@@ -118,6 +118,7 @@ void Object::resetMatrix(){
  */
 void Object::draw(){
 	glBindVertexArray(vao);
+	glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(m_model));
 	glDrawArrays(GL_TRIANGLES, 0, 3*triangle_count);
 }
 

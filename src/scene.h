@@ -152,4 +152,13 @@ private:
 };
 
 
+//Grama
+class Grass : public Object{
+public :
+	Grass();
+	void loadData(const std::string& object_name);
+	void draw();
+};
+
+
 #endif

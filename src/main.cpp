@@ -15,6 +15,7 @@ Camera *c;
 Terrain *t;
 Object *ob;
 Object *entity;
+Grass *grass;
 float d = 0.1f;
 glm::mat4 proj;
 glm::vec4 light = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
@@ -73,16 +74,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		c->translate(0.01f, 0, 0);
 
 	if (key == GLFW_KEY_H && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		ob->localTranslate(0.01f, 0, 0);
+		entity->translate(0.01f, 0, 0);
 
 	if (key == GLFW_KEY_G && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		ob->localTranslate(-0.01f, 0, 0);
-
-	if (key == GLFW_KEY_Y && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		ob->localTranslate(0.0f, 0, 0.01f);
+		entity->translate(-0.01f, 0, 0);
 
 	if (key == GLFW_KEY_B && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		ob->localTranslate(0.0f, 0, -0.01f);
+		entity->translate(0.0f, 0, 0.01f);
+
+	if (key == GLFW_KEY_Y && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		entity->translate(0.0f, 0, -0.01f);
 
 	if (key == GLFW_KEY_U && (action == GLFW_PRESS || action == GLFW_REPEAT)){
 		light = rotP * light;
@@ -183,9 +184,12 @@ int main(int argc, const char* argv[]){
 	std::string names[] = {"default_vertex.glsl", "default_frag.glsl"};
 	GLuint simple_program = create_program(2, flags, names);
 
-	GLenum h_flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 	std::string h_names[] = {"height_vertex.glsl", "default_frag.glsl"};
-	GLuint height_program = create_program(2, h_flags, h_names);
+	GLuint height_program = create_program(2, flags, h_names);
+
+	std::string g_names[] = {"grass_vertex.glsl", "grass_frag.glsl"};
+	GLuint grass_program = create_program(2, flags, g_names);
+
 
 	/////////////
 	// Objects //
@@ -199,19 +203,24 @@ int main(int argc, const char* argv[]){
 	ob->loadData("plane.obj");
 	ob->bindProgram(simple_program);
 
+	grass = new Grass;
+	grass->loadData("grass.obj");
+	grass->bindProgram(grass_program);
+	grass->scale(0.01f, 0.01f, 0.01f);
+
 	entity = new Object;
-	entity->loadData("entity.obj");
+	entity->loadData("tree.obj");
 	entity->bindProgram(height_program);
+	entity->scale(0.01f, 0.01f, 0.01f);
 
 	c = new Camera(0, 0, 2, 0, 0, -1);
-	proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.1f);	
+	proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.001f);	
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_DEPTH_TEST);
 	glCullFace(GL_BACK);
-	//glEnable(GL_CULL_FACE);
-
+	
 	///////////////
 	// Main Loop //
 	///////////////
@@ -223,6 +232,8 @@ int main(int argc, const char* argv[]){
 
 		GLfloat min = 0xFFFFFFFF;
 		glClearBufferfv(GL_DEPTH, 0, &min);
+
+		glEnable(GL_CULL_FACE);
 
 		glUseProgram(ter_program);
 		c->bindProgram(ter_program);
@@ -239,6 +250,14 @@ int main(int argc, const char* argv[]){
 		c->bindProgram(height_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		entity->draw();
+
+		//glDisable(GL_CULL_FACE);
+
+		glUseProgram(grass_program);
+		c->bindProgram(grass_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		grass->draw();
+
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();

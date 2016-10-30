@@ -10,32 +10,57 @@ layout (binding  = 1) uniform sampler2D height;
 
 out vec3 norm_c;
 
-vec4 grass_position(void){
+mat4 grass_translation(void){
 
 	vec3 coord;
 
-	coord.x = float(gl_InstanceID & 0x00ff);
-	coord.z = float((gl_InstanceID & 0xff00) >> 8);
-	coord.xz = fma(coord.xz, vec2(0.0078125), vec2(-1.0f));
-
-	coord.y = texture(height, vec2(coord.x, -coord.z) * 0.5f + 0.5f).a * 0.4f;
+	coord.x = float(gl_InstanceID & 0x00ff) + ((gl_InstanceID * 17 + 191) % 200 - 100) / 20.0f;
+	coord.z = float((gl_InstanceID & 0xff00) >> 8) + ((gl_InstanceID * 29 + 383) % 200 - 100) / 20.0f;
+	//coord.xz = fma(coord.xz, vec2(0.0078125), vec2(-1.0f));
+	coord.xz = coord.xz / 128.0f - vec2(1.0f);
+	coord.y = texture(height, coord.xz * 0.5f + 0.5f).a * 0.15f;
 	
-	return vec4(coord, 1.0f);
+	mat4 trans = mat4(1.0f);
+	trans[3] = vec4(coord, 1.0f);
 
+	return trans;
+}
+
+mat4 grass_rotation(){
+	mat4 roty = mat4(1.0f);
+
+	float ty = ((gl_InstanceID * 17 + 191) % 360) * 3.1415f / 180.0f;
+	roty[0].x = cos(ty);
+	roty[0].z = sin(ty);
+	roty[2].x = -sin(ty);
+	roty[2].z = cos(ty);
+
+	mat4 rotx = mat4(1.0f);
+
+	float tx = (((gl_InstanceID * 23 + 179) % 80) - 40) * 3.1415f / 180.0f;
+	roty[1].y = cos(tx);
+	roty[1].z = sin(tx);
+	roty[2].y = -sin(tx);
+	roty[2].z = cos(tx);
+
+	return roty * rotx;
+}
+
+mat4 grass_scale(){
+	float s = ((gl_InstanceID * 17 + 191) % 200 + 100) / 80.0f;
+	mat4 scale = mat4(1.0f);
+	scale[1].y = s;
+
+	return scale;
 }
 
 void main(){
-	mat4 m_model = model;
 
-	float t = float(gl_InstanceID) * 3.1415 / 180.0;
-	//t = 0.0f;
-	mat4 rot;
-	rot[0].x = cos(t);
-	rot[0].z = sin(t);
-	rot[2].x = -sin(t);
-	rot[2].z = cos(t);
-	//m_model = m_model * rot;
-	m_model[3] = grass_position();
+	mat4 trans = grass_translation();
+	mat4 rot = grass_rotation();
+	mat4 scale = grass_scale();
+	
+	mat4 m_model = trans * rot * scale * model;
 
 	gl_Position = proj * view * m_model * vec4(vertex, 1.0f);
 	norm_c = normal;

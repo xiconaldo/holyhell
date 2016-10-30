@@ -1,7 +1,7 @@
 #version 430 core
 
 layout (vertices = 4) out;
-float tessLevel = 40.0f;
+float tessLevel = 30.0f;
 
 void main(){
 

@@ -11,7 +11,7 @@ Object::Object(){}
  */
 void Object::loadData(const std::string& object_name){
 
-	load_grouped_data(base_data_location + object_name, triangle_count, data);
+	load_grouped_data(base_data_location + object_name, triangle_count, data, true);
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);

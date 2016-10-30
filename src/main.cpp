@@ -230,10 +230,11 @@ int main(int argc, const char* argv[]){
 		const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
 
-		GLfloat min = 0xFFFFFFFF;
+		GLfloat min = 1.0f;
 		glClearBufferfv(GL_DEPTH, 0, &min);
 
 		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
 
 		glUseProgram(ter_program);
 		c->bindProgram(ter_program);
@@ -241,21 +242,23 @@ int main(int argc, const char* argv[]){
 		glUniform3fv(3, 1, glm::value_ptr(light));
 		t->draw();
 
+		glCullFace(GL_BACK);
 		glUseProgram(simple_program);
 		c->bindProgram(simple_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		ob->draw();	
+		ob->draw();
 
 		glUseProgram(height_program);
 		c->bindProgram(height_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		entity->draw();
 
-		//glDisable(GL_CULL_FACE);
+		glDisable(GL_CULL_FACE);
 
 		glUseProgram(grass_program);
 		c->bindProgram(grass_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		glUniform3fv(3, 1, glm::value_ptr(light));
 		grass->draw();
 
 		

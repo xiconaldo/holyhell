@@ -17,7 +17,7 @@ void main(){
 
 	text_coord = gl_TessCoord.xy;
 	float height = texture(height_map, text_coord).a;
-	pos.y += height*0.4f;
+	pos.y += height * 0.15f;
 
 	gl_Position = proj * view * model * pos;
 }

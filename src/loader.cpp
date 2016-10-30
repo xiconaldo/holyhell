@@ -1,5 +1,27 @@
 #include <loader.h>
 
+Face::Face(int n_vertices){
+	vertex_count = n_vertices;
+	vertices = new Vertex[vertex_count];
+}
+
+Face::~Face(){
+	delete[] vertices;
+}
+
+Indexed_Face::Indexed_Face(int n_vertices){
+	vertex_count = n_vertices;
+	vertices = new int[vertex_count];
+	normals = new int[vertex_count];
+	texts = new int[vertex_count];
+}
+
+Indexed_Face::~Indexed_Face(){
+	delete[] vertices;
+	delete[] normals;
+	delete[] texts;
+}
+
 /**
  * Conta o número de ocorrências de determinado símbolo em uma string.
  * @param  word   string da qual deseja-se contar os símbolos.
@@ -47,7 +69,7 @@ int count_symbol(const std::string& word, char symbol){
  * @param uv_count       referência para um inteiro que contem
  *                       o número de coordenadas de textura lidas 
  *                       do arquivo.
- * @param triangle_count referência para um inteiro que contem
+ * @param face_count referência para um inteiro que contem
  *                       o número de triângulos formados pelos 
  *                       vértices lidos do arquivo.
  */
@@ -55,13 +77,11 @@ void load_data(	const std::string& obj_name,
 				std::vector<glm::vec3> &vertices,
 				std::vector<glm::vec3> &normals,
 				std::vector<glm::vec2> &uvs, 
-				std::vector<int> &vertex_indices, 
-				std::vector<int> &normal_indices, 
-				std::vector<int> &uv_indices,
+				std::vector<Indexed_Face> &faces,
 				int& vertex_count, 
 				int& normal_count, 
 				int& uv_count,
-				int& triangle_count){
+				int& face_count){
 	
 	std::fstream input_obj(obj_name, std::ios_base::in);
 	std::string line;
@@ -69,7 +89,7 @@ void load_data(	const std::string& obj_name,
 	vertex_count = 0;
 	normal_count = 0; 
 	uv_count = 0;
-	triangle_count = 0;
+	face_count = 0;
 
 	while(std::getline(input_obj, line)){
 		if(line[0] == '#') continue;
@@ -84,7 +104,7 @@ void load_data(	const std::string& obj_name,
 			uv_count++;
 		}
 		else if(line.substr(0,2) == "f "){
-			triangle_count += count_symbol(line)-2;
+			face_count++;
 		}
 	}	
 	/*std::cout << "Vertices: " << vertex_count << std::endl;
@@ -94,15 +114,12 @@ void load_data(	const std::string& obj_name,
 	vertices.resize(vertex_count);
 	if(normal_count > 0) normals.resize(normal_count);
 	if(uv_count > 0) uvs.resize(uv_count);
-
-	vertex_indices.resize(3*triangle_count);
-	if(normal_count > 0) normal_indices.resize(3*triangle_count);
-	if(uv_count > 0) uv_indices.resize(3*triangle_count);
+	faces.resize(face_count);
 
 	input_obj.clear();
 	input_obj.seekg(0, std::ios::beg);
 
-	int v_index = 0, vn_index = 0, uv_index = 0, index_index = 0;
+	int v_index = 0, vn_index = 0, uv_index = 0, face_index = 0;
 
 	while(std::getline(input_obj, line)){
 		if(line[0] == '#') continue;
@@ -134,123 +151,44 @@ void load_data(	const std::string& obj_name,
 			int last = index_block.rfind("/");
 			int int_ignore;
 			char char_ignore;
+
+			faces[face_index].vertex_count = count;
+			std::stringstream line_stream = std::stringstream(line.substr(2));	
 			
 			if(first == -1){
-				std::stringstream(line.substr(2)) >> vertex_indices[index_index]
-												  >> vertex_indices[index_index+1]
-												  >> vertex_indices[index_index+2]
-												  >> int_ignore;
-				index_index += 3;
 
-				if(count == 4){
-					std::stringstream(line.substr(2)) >> vertex_indices[index_index+1]
-													  >> int_ignore
-													  >> vertex_indices[index_index+2]
-													  >> vertex_indices[index_index];
-					index_index += 3;
+				for(int i = 0; i < count; i++){
+					line_stream >> faces[face_index].vertices[i];
 				}
 			}
 			else if(first == last){
-				std::stringstream(line.substr(2)) >> vertex_indices[index_index]
-													  >> char_ignore
-													  >> normal_indices[index_index]
-													  >> vertex_indices[index_index+1]
-													  >> char_ignore
-													  >> normal_indices[index_index+1]
-													  >> vertex_indices[index_index+2]
-													  >> char_ignore
-													  >> normal_indices[index_index+2];
-				index_index += 3;
 
-				if(count == 4){
-					std::stringstream(line.substr(2)) >> vertex_indices[index_index+1]
-													  >> char_ignore
-													  >> normal_indices[index_index+1]
-													  >> int_ignore
-													  >> char_ignore
-													  >> int_ignore
-													  >> vertex_indices[index_index+2]
-													  >> char_ignore
-													  >> normal_indices[index_index+2]
-													  >> vertex_indices[index_index]
-													  >> char_ignore
-													  >> normal_indices[index_index];
-
-					index_index += 3;
+				for(int i = 0; i < count; i++){
+					line_stream >> faces[face_index].vertices[i];
+					line_stream >> char_ignore;
+					line_stream >> faces[face_index].texts[i];
 				}
 			}
 			else if(last - first == 1){
-				std::stringstream(line.substr(2)) >> vertex_indices[index_index]
-												  >> char_ignore >> char_ignore
-												  >> normal_indices[index_index]
-												  >> vertex_indices[index_index+1]
-												  >> char_ignore >> char_ignore
-												  >> normal_indices[index_index+1]
-												  >> vertex_indices[index_index+2]
-												  >> char_ignore >> char_ignore
-												  >> normal_indices[index_index+2];
-				index_index += 3;
 
-				if(count == 4){
-					std::stringstream(line.substr(2)) >> vertex_indices[index_index+1]
-													  >> char_ignore >> char_ignore
-													  >> normal_indices[index_index+1]
-													  >> int_ignore
-													  >> char_ignore >> char_ignore
-													  >> int_ignore
-													  >> vertex_indices[index_index+2]
-													  >> char_ignore >> char_ignore
-													  >> normal_indices[index_index+2]
-													  >> vertex_indices[index_index]
-													  >> char_ignore >> char_ignore
-													  >> normal_indices[index_index];
-
-					index_index += 3;
+				for(int i = 0; i < count; i++){
+					line_stream >> faces[face_index].vertices[i];
+					line_stream >> char_ignore >> char_ignore;
+					line_stream >> faces[face_index].normals[i];
 				}
 			}
 			else{ // first != last
-				std::stringstream(line.substr(2)) >> vertex_indices[index_index]
-												  >> char_ignore
-												  >> normal_indices[index_index]
-												  >> char_ignore
-												  >> uv_indices[index_index]
-												  >> vertex_indices[index_index+1]
-												  >> char_ignore
-												  >> normal_indices[index_index+1]
-												  >> char_ignore
-												  >> uv_indices[index_index+1]
-												  >> vertex_indices[index_index+2]
-												  >> char_ignore
-												  >> normal_indices[index_index+2]
-												  >> char_ignore
-												  >> uv_indices[index_index+2];
-				index_index += 3;
 
-				if(count == 4){
-					std::stringstream(line.substr(2)) >> vertex_indices[index_index+1]
-													  >> char_ignore
-													  >> normal_indices[index_index+1]
-													  >> char_ignore
-													  >> uv_indices[index_index+1]
-													  >> int_ignore
-													  >> char_ignore
-													  >> int_ignore
-													  >> char_ignore
-													  >> int_ignore
-													  >> vertex_indices[index_index+2]
-													  >> char_ignore
-													  >> normal_indices[index_index+2]
-													  >> char_ignore
-													  >> uv_indices[index_index+2]
-													  >> vertex_indices[index_index]
-													  >> char_ignore
-													  >> normal_indices[index_index]
-													  >> char_ignore
-													  >> uv_indices[index_index];
-
-					index_index += 3;
-				}
+				for(int i = 0; i < count; i++){
+					line_stream >> faces[face_index].vertices[i];
+					line_stream >> char_ignore;
+					line_stream >> faces[face_index].texts[i];
+					line_stream >> char_ignore;
+					line_stream >> faces[face_index].normals[i];
+				}				
 			}
+
+			face_index++;
 		}	
 	}
 }
@@ -267,7 +205,7 @@ void load_data(	const std::string& obj_name,
  *                       elementos que se encontram em normals.
  * @param uv_indices     array de índices inteiros que mapeaiam os
  *                       elementos que se encontram em uvs.
- * @param triangle_count número de triângulos formados pelos vértices.
+ * @param face_count número de triângulos formados pelos vértices.
  * @param data           ponteiro para um array de Vertex254s, que contêm 
  *                       todos os vértices, normais e coordenadas de 
  *                       textura lidas dos três primeiros parâmetros, 
@@ -277,18 +215,50 @@ void load_data(	const std::string& obj_name,
 void group_data(const std::vector<glm::vec3> &vertices,
 				const std::vector<glm::vec3> &normals,
 				const std::vector<glm::vec2> &uvs, 
-				const std::vector<int> &vertex_indices, 
-				const std::vector<int> &normal_indices, 
-				const std::vector<int> &uv_indices,
-				const int triangle_count,
-				std::vector<Vertex> &data){
+				const std::vector<Indexed_Face> &faces,
+				int& face_count,
+				std::vector<Vertex> &data,
+				const bool triangulate){
 
-	data.resize(triangle_count*3);
+	Vertex aux;
+	int n_vertices;
+	face_count = 0;
 
-	for(int i = 0; i < triangle_count*3; i++){
-		data[i].vertices = vertices[vertex_indices[i]-1];
-		if(!normals.empty()) data[i].normals = normals[normal_indices[i]-1];
-		if(!uvs.empty()) data[i].texts = uvs[uv_indices[i]-1];
+	for(int i = 0; i < faces.size(); i++){
+
+		n_vertices = faces[i].vertex_count;
+
+		if(!triangulate || n_vertices == 3){
+			for(int j = 0; j < n_vertices; j++){
+				aux.vertices = vertices[faces[i].vertices[j]-1];
+
+				if(!normals.empty()) 
+					aux.normals = normals[faces[i].normals[j]-1];
+
+				if(!uvs.empty())
+					aux.texts = uvs[faces[i].texts[j]-1];
+
+				data.push_back(aux);
+			}
+			face_count++;
+		}
+
+		else{
+			for(int j = 0; j < n_vertices-1; j += 2){
+				for(int k = j; k < j+3; k++){
+					aux.vertices = vertices[faces[i].vertices[k % n_vertices]-1];
+
+					if(!normals.empty()) 
+						aux.normals = normals[faces[i].normals[k % n_vertices]-1];
+
+					if(!uvs.empty())
+						aux.texts = uvs[faces[i].texts[k % n_vertices]-1];
+
+					data.push_back(aux);
+				}
+				face_count++;
+			}
+		}
 	}
 }
 
@@ -300,7 +270,7 @@ void group_data(const std::vector<glm::vec3> &vertices,
  * @param [in] obj_name			nome do arquivo .obj do qual deseja-se extrair 
  * 								os dados.
  * 								
- * @param [out] triangle_count 	quantidade de triângulos lidos no arquivo.
+ * @param [out] face_count 	quantidade de triângulos lidos no arquivo.
  * 
  * @param [out] data 			array de estruturas Vertex254, que contêm todos os
  * 								vértices, normais e coordenadas de texturas 
@@ -313,36 +283,34 @@ void group_data(const std::vector<glm::vec3> &vertices,
  * um único array.
  * @param obj_name       nome do arquivo .obj do qual deseja-se extrair 
  *                       os dados.
- * @param triangle_count quantidade de triângulos lidos no arquivo.
+ * @param face_count quantidade de triângulos lidos no arquivo.
  * @param data           array de estruturas Vertex254, que contêm todos os
  *                       vértices, normais e coordenadas de texturas 
  *                       lidos do arquivo.
  */
 void load_grouped_data(	const std::string& obj_name,
-						int& triangle_count,
-						std::vector<Vertex> &data){
+						int& face_count,
+						std::vector<Vertex> &data,
+						const bool triangulate){
 	
 	std::vector<glm::vec3> v, vn;
 	std::vector<glm::vec2> vt;
-	std::vector<int> v_index, vn_index, vt_index;
+	std::vector<Indexed_Face> face;
 	int vertex_count, normal_count, vt_count;
 
 	load_data(	obj_name,
 				v, vn, vt,
-				v_index,
-				vn_index,
-				vt_index,
+				face,
 				vertex_count,
 				normal_count,
 				vt_count,
-				triangle_count);
+				face_count);
 
 	group_data(	v, vn, vt,
-				v_index,
-				vn_index,
-				vt_index,
-				triangle_count,
-				data);
+				face,
+				face_count,
+				data,
+				triangulate);
 }
 
 /**

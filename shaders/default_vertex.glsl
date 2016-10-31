@@ -13,7 +13,9 @@ out vec2 text_coord;
 
 void main(){
 	vec4 pos = vec4(vertex, 1.0f);
+
 	gl_Position = proj * view * model * pos;
+	
 	norm_coord = normal;
 	text_coord = uv;
 }

@@ -118,11 +118,12 @@ protected:
 
 	glm::mat4 m_model = glm::mat4(1.0f);
 
-	GLuint vertex_buffer;
 	GLuint model_location;
 	GLuint vertex_location;
 	GLuint normal_location;
 	GLuint uv_location;
+
+	GLuint vertex_buffer;
 	GLuint vao;
 	GLuint program;
 

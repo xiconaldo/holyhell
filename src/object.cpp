@@ -24,8 +24,8 @@ void Object::loadData(const std::string& object_name, const std::string& text_na
 	glSamplerParameteri(samp, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(samp, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindSampler(text_target, samp);
+	
 	glActiveTexture(GL_TEXTURE0);
-
 	KTX_error_code_t error = ktxLoadTextureN((base_text_location + text_name).c_str(), &text_gl_name, &text_target, NULL, NULL, NULL, NULL, NULL);
 	verifyTextError(error);
 }
@@ -94,7 +94,7 @@ void Object::bindProgram(GLuint program){
 
 	vertex_location = glGetAttribLocation(program, "vertex");
 	normal_location = glGetAttribLocation(program, "normal");
-	//uv_location 	= glGetAttribLocation(program, "uv");
+	uv_location 	= glGetAttribLocation(program, "uv");
 	model_location = glGetUniformLocation(program, "model");
 
 	glVertexAttribPointer(vertex_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
@@ -103,8 +103,8 @@ void Object::bindProgram(GLuint program){
 	glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normals));
 	glEnableVertexAttribArray(normal_location);
 
-	// glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texts));
-	// glEnableVertexAttribArray(uv_location);
+	glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texts));
+	glEnableVertexAttribArray(uv_location);
 
 	updateModelMatrix();
 }
@@ -130,8 +130,8 @@ void Object::resetMatrix(){
  * Desenha o objeto na tela.
  */
 void Object::draw(){
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(text_target, text_gl_name);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(text_target, text_gl_name);
 
 	glBindVertexArray(vao);
 	glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(m_model));

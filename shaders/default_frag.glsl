@@ -1,6 +1,6 @@
 #version 430 core
 
-layout (binding  = 0) uniform sampler2D object_texture;
+layout (binding = 0) uniform sampler2D object_texture;
 
 in vec3 norm_coord;
 in vec2 text_coord;

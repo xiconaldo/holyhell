@@ -20,6 +20,7 @@ void main(){
 	m_model[3].y += texture(height, vec2(model[3].x, model[3].z) * 0.5f + 0.5f).a * 0.15f;
 
 	gl_Position = proj * view * m_model * pos;
+	
 	norm_coord = normal;
 	text_coord = uv;
 }

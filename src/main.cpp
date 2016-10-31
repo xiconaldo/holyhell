@@ -13,8 +13,8 @@
 CreateProgram create_program;
 Camera *c;
 Terrain *t;
-Object *ob;
-Object *entity;
+Object *plane;
+Object *tree, *tree2, *tree3;
 Grass *grass;
 float d = 0.1f;
 glm::mat4 proj;
@@ -74,16 +74,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		c->translate(0.01f, 0, 0);
 
 	if (key == GLFW_KEY_H && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		entity->translate(0.01f, 0, 0);
+		tree->translate(0.01f, 0, 0);
 
 	if (key == GLFW_KEY_G && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		entity->translate(-0.01f, 0, 0);
+		tree->translate(-0.01f, 0, 0);
 
 	if (key == GLFW_KEY_B && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		entity->translate(0.0f, 0, 0.01f);
+		tree->translate(0.0f, 0, 0.01f);
 
 	if (key == GLFW_KEY_Y && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		entity->translate(0.0f, 0, -0.01f);
+		tree->translate(0.0f, 0, -0.01f);
 
 	if (key == GLFW_KEY_U && (action == GLFW_PRESS || action == GLFW_REPEAT)){
 		light = rotP * light;
@@ -195,23 +195,35 @@ int main(int argc, const char* argv[]){
 	// Objects //
 	/////////////
 	
-	t = new Terrain;
-	t->loadData("plane.obj", "map.ktx");
-	t->bindProgram(ter_program);
+	// t = new Terrain;
+	// t->loadData("plane.obj", "map.ktx");
+	// t->bindProgram(ter_program);
 
-	ob = new Object;
-	ob->loadData("plane.obj");
-	ob->bindProgram(simple_program);
+	// grass = new Grass;
+	// grass->loadData("grass.obj");
+	// grass->bindProgram(grass_program);
+	// grass->scale(0.01f, 0.01f, 0.01f);
+	
+	plane = new Object;
+	plane->loadData("plane.obj", "yellow.ktx");
+	plane->bindProgram(simple_program);
 
-	grass = new Grass;
-	grass->loadData("grass.obj");
-	grass->bindProgram(grass_program);
-	grass->scale(0.01f, 0.01f, 0.01f);
+	tree = new Object;
+	tree->loadData("tree.obj", "pine_tree.ktx");
+	tree->bindProgram(height_program);
+	tree->scale(0.01f, 0.01f, 0.01f);
 
-	entity = new Object;
-	entity->loadData("tree.obj", "pine_tree.ktx");
-	entity->bindProgram(height_program);
-	entity->scale(0.01f, 0.01f, 0.01f);
+	tree2 = new Object;
+	tree2->loadData("tree.obj", "grass.ktx");
+	tree2->bindProgram(height_program);
+	tree2->scale(0.01f, 0.01f, 0.01f);
+	tree2->translate(0.1f, 0.0f, 0.1f);
+;
+	tree3 = new Object;
+	tree3->loadData("tree.obj", "red.ktx");
+	tree3->bindProgram(height_program);
+	tree3->scale(0.01f, 0.01f, 0.01f);
+	tree3->translate(-0.1f, 0.0f, 0.1f);
 
 	c = new Camera(0, 0, 2, 0, 0, -1);
 	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);	
@@ -233,33 +245,29 @@ int main(int argc, const char* argv[]){
 		GLfloat min = 1.0f;
 		glClearBufferfv(GL_DEPTH, 0, &min);
 
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
-
-		glUseProgram(ter_program);
-		c->bindProgram(ter_program);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		glUniform3fv(3, 1, glm::value_ptr(light));
-		t->draw();
-
-		glCullFace(GL_BACK);
-		glUseProgram(simple_program);
-		c->bindProgram(simple_program);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		ob->draw();
-
-		glDisable(GL_CULL_FACE);
+		// glUseProgram(ter_program);
+		// c->bindProgram(ter_program);
+		// glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		// glUniform3fv(3, 1, glm::value_ptr(light));
+		// t->draw();
 
 		glUseProgram(height_program);
 		c->bindProgram(height_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		entity->draw();
+		tree->draw();
+		tree2->draw();
+		tree3->draw();
 
-		glUseProgram(grass_program);
-		c->bindProgram(grass_program);
+		glUseProgram(simple_program);
+		c->bindProgram(simple_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		glUniform3fv(3, 1, glm::value_ptr(light));
-		grass->draw();
+		plane->draw();
+
+		// glUseProgram(grass_program);
+		// c->bindProgram(grass_program);
+		// glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		// glUniform3fv(3, 1, glm::value_ptr(light));
+		// grass->draw();
 
 		
 		glfwSwapBuffers(window);

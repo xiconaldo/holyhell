@@ -1,13 +1,18 @@
 #version 430 core
 
-in vec3 norm_c;
+layout (binding  = 0) uniform sampler2D object_texture;
+
+in vec3 norm_coord;
+in vec2 text_coord;
 out vec4 color;
+
 vec3 light = vec3(-1.0f, -1.0f, -1.0f);
 float intensity;
 
 void main(){
 	light = normalize(light);
-	intensity = -dot(norm_c, light);
-	if(intensity < 0.1) intensity = 0.1;
-	color = vec4(1.0f, 1.0f, 1.0f, 1.0f) * intensity;
+	intensity = -dot(norm_coord, light);
+	if(intensity < 0.2) intensity = 0.2;
+	
+	color = texture(object_texture, text_coord) * pow(intensity, 2);
 }

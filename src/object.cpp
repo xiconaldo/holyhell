@@ -9,7 +9,7 @@ Object::Object(){}
  * Carrega os dados do objeto em um buffer.
  * @param object_name nome do arquivo onde se encontram os dados.
  */
-void Object::loadData(const std::string& object_name){
+void Object::loadData(const std::string& object_name, const std::string& text_name){
 
 	load_grouped_data(base_data_location + object_name, triangle_count, data, true);
 
@@ -19,6 +19,15 @@ void Object::loadData(const std::string& object_name){
 	glGenBuffers(1, &vertex_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * data.size(), (void*)data.data(), GL_STATIC_DRAW);
+
+	glGenSamplers(1, &samp);
+	glSamplerParameteri(samp, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(samp, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glBindSampler(text_target, samp);
+	glActiveTexture(GL_TEXTURE0);
+
+	KTX_error_code_t error = ktxLoadTextureN((base_text_location + text_name).c_str(), &text_gl_name, &text_target, NULL, NULL, NULL, NULL, NULL);
+	verifyTextError(error);
 }
 
 /**
@@ -85,6 +94,7 @@ void Object::bindProgram(GLuint program){
 
 	vertex_location = glGetAttribLocation(program, "vertex");
 	normal_location = glGetAttribLocation(program, "normal");
+	//uv_location 	= glGetAttribLocation(program, "uv");
 	model_location = glGetUniformLocation(program, "model");
 
 	glVertexAttribPointer(vertex_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
@@ -92,6 +102,9 @@ void Object::bindProgram(GLuint program){
 
 	glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normals));
 	glEnableVertexAttribArray(normal_location);
+
+	// glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texts));
+	// glEnableVertexAttribArray(uv_location);
 
 	updateModelMatrix();
 }
@@ -117,9 +130,51 @@ void Object::resetMatrix(){
  * Desenha o objeto na tela.
  */
 void Object::draw(){
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(text_target, text_gl_name);
+
 	glBindVertexArray(vao);
 	glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(m_model));
+
 	glDrawArrays(GL_TRIANGLES, 0, 3*triangle_count);
+}
+
+void Object::verifyTextError(KTX_error_code_t code){
+	switch(code){
+		case KTX_SUCCESS:
+			std::cout << "KTX_SUCCESS" << std::endl;
+			break;
+		case KTX_FILE_OPEN_FAILED:
+			std::cout << "KTX_FILE_OPEN_FAILED" << std::endl;
+			break;
+		case KTX_FILE_WRITE_ERROR:
+			std::cout << "KTX_FILE_WRITE_ERROR" << std::endl;
+			break;
+		case KTX_INVALID_OPERATION:
+			std::cout << "KTX_INVALID_OPERATION" << std::endl;
+			break;
+		case  KTX_INVALID_VALUE:
+			std::cout << "KTX_INVALID_VALUE" << std::endl;
+			break;
+		case  KTX_OUT_OF_MEMORY:
+			std::cout << " KTX_OUT_OF_MEMORY," << std::endl;
+			break;
+		case KTX_UNEXPECTED_END_OF_FILE:
+			std::cout << "KTX_UNEXPECTED_END_OF_FILE" << std::endl;
+			break;
+		case KTX_UNKNOWN_FILE_FORMAT:
+			std::cout << "KTX_UNKNOWN_FILE_FORMAT" << std::endl;
+			break;
+		case KTX_UNSUPPORTED_TEXTURE_TYPE:
+			std::cout << "KTX_UNSUPPORTED_TEXTURE_TYPE" << std::endl;
+			break;
+		case KTX_GL_ERROR:
+			std::cout << "KTX_GL_ERROR" << std::endl;
+			break;
+		case  KTX_NOT_FOUND:
+			std::cout << " KTX_NOT_FOUND" << std::endl;
+			break;
+	}
 }
 
 /**
@@ -131,4 +186,9 @@ void Object::setBaseDataLocation(const std::string& location){
 	base_data_location = location;
 }
 
+void Object::setBaseTextLocation(const std::string& location){
+	base_text_location = location;
+}
+
 std::string Object::base_data_location = "";
+std::string Object::base_text_location = "";

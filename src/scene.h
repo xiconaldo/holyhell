@@ -94,33 +94,25 @@ private:
 class Object{
 public:
 	Object();
-
-	void loadData(const std::string& object_name);
-
+	void loadData(const std::string& object_name, const std::string& text_name = "");
 	void localRotate(int xc, int yc, int zc, float degrees);
-
 	void localTranslate(float x, float y, float z);
-
 	void localScale(float x, float y, float z);
-
 	void rotate(int xc, int yc, int zc, float degrees);
-
 	void translate(float x, float y, float z);
-
 	void scale(float x, float y, float z);
-
 	void bindProgram(GLuint program);
-
 	void resetMatrix();
-
 	void draw();
-
+	void verifyTextError(KTX_error_code_t code);
 	static void setBaseDataLocation(const std::string& location);
+	static void setBaseTextLocation(const std::string& location);
 
 protected:
 	
 	std::string data_location;
 	static std::string base_data_location;
+	static std::string base_text_location;
 	int triangle_count;
 	std::vector<Vertex> data;
 
@@ -130,8 +122,13 @@ protected:
 	GLuint model_location;
 	GLuint vertex_location;
 	GLuint normal_location;
+	GLuint uv_location;
 	GLuint vao;
 	GLuint program;
+
+	GLuint text_gl_name;
+	GLuint samp;
+	GLenum text_target;
 
 	void updateModelMatrix();
 };
@@ -143,12 +140,9 @@ public:
 	Terrain();
 	void loadData(const std::string& object_name, const std::string& text_name);
 	void draw();
-	static void setBaseTextLocation(const std::string& location);
 
 private:
 	GLuint text_map;
-	GLuint text_image;
-	static std::string base_text_location;
 };
 
 

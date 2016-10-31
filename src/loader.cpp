@@ -314,7 +314,7 @@ void load_grouped_data(	const std::string& obj_name,
 }
 
 /**
- * Lê um arquivo de texto e escreve e retorna seu conteúdo na forma
+ * Lê um arquivo de texto e retorna seu conteúdo na forma
  * de uma string. Neste contexto, é usada para ler arquivos que contêm
  * código-fonte de shaders, no formato .glsl.
  * @param  file_name nome do arquivo a ser lido.

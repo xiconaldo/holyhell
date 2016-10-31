@@ -33,7 +33,7 @@ void initDirectories(const char *location){
 	TEXTURES = str_location + "../textures/";
 	create_program.baseLocation = SHADERS;
 	Object::setBaseDataLocation(DATA);
-	Terrain::setBaseTextLocation(TEXTURES);
+	Object::setBaseTextLocation(TEXTURES);
 }
 
 ////////////////////////
@@ -209,12 +209,12 @@ int main(int argc, const char* argv[]){
 	grass->scale(0.01f, 0.01f, 0.01f);
 
 	entity = new Object;
-	entity->loadData("tree.obj");
+	entity->loadData("tree.obj", "pine_tree.ktx");
 	entity->bindProgram(height_program);
 	entity->scale(0.01f, 0.01f, 0.01f);
 
 	c = new Camera(0, 0, 2, 0, 0, -1);
-	proj = glm::infinitePerspective(3.14f/4, 16.0f/9.0f, 0.001f);	
+	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);	
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 	glEnable(GL_DEPTH_CLAMP);
@@ -248,12 +248,12 @@ int main(int argc, const char* argv[]){
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		ob->draw();
 
+		glDisable(GL_CULL_FACE);
+
 		glUseProgram(height_program);
 		c->bindProgram(height_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		entity->draw();
-
-		glDisable(GL_CULL_FACE);
 
 		glUseProgram(grass_program);
 		c->bindProgram(grass_program);

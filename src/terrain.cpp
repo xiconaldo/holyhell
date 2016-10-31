@@ -19,29 +19,26 @@ void Terrain::loadData(const std::string& object_name, const std::string& text_n
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * data.size(), (void*)data.data(), GL_STATIC_DRAW);
 
-
-	GLenum text;
-	GLuint samp;
-
 	glGenSamplers(1, &samp);
 	glSamplerParameteri(samp, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(samp, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindSampler(text, samp);
-	glActiveTexture(GL_TEXTURE0);
+	glBindSampler(text_target, samp);
 
-	KTX_error_code_t error = ktxLoadTextureN((base_text_location + "dirt.ktx").c_str(), &text_image, &text, NULL, NULL, NULL, NULL, NULL);
+	glActiveTexture(GL_TEXTURE0);
+	KTX_error_code_t error = ktxLoadTextureN((base_text_location + "dirt.ktx").c_str(), &text_gl_name, &text_target, NULL, NULL, NULL, NULL, NULL);
+	verifyTextError(error);
 
 	glActiveTexture(GL_TEXTURE1);
-	error = ktxLoadTextureN((base_text_location + text_name).c_str(), &text_map, &text, NULL, NULL, NULL, NULL, NULL);
+	error = ktxLoadTextureN((base_text_location + text_name).c_str(), &text_map, &text_target, NULL, NULL, NULL, NULL, NULL);
+	verifyTextError(error);
 }
 
 void Terrain::draw(){
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(text_target, text_gl_name);
+	//ktxLoadTextureN((base_text_location + "dirt.ktx").c_str(), &text_gl_name, &text_target, NULL, NULL, NULL, NULL, NULL); // TEM QUE SAIR!!!!!!
+
+
 	glBindVertexArray(vao);
 	glDrawArrays(GL_PATCHES, 0, 4);
 }
-
-void Terrain::setBaseTextLocation(const std::string& location){
-	base_text_location = location;
-}
-
-std::string Terrain::base_text_location = "";

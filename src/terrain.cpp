@@ -10,6 +10,7 @@ Terrain::Terrain(){}
  * @param object_name nome do arquivo onde se encontram os dados.
  */
 void Terrain::loadData(const std::string& object_name, const std::string& text_name){
+	
 	load_grouped_data(base_data_location + object_name, triangle_count, data, false);
 
 	glGenVertexArrays(1, &vao);
@@ -34,10 +35,11 @@ void Terrain::loadData(const std::string& object_name, const std::string& text_n
 }
 
 void Terrain::draw(){
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(text_target, text_gl_name);
-	//ktxLoadTextureN((base_text_location + "dirt.ktx").c_str(), &text_gl_name, &text_target, NULL, NULL, NULL, NULL, NULL); // TEM QUE SAIR!!!!!!
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(text_target, text_gl_name);
 
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(text_target, text_map);
 
 	glBindVertexArray(vao);
 	glDrawArrays(GL_PATCHES, 0, 4);

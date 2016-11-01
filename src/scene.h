@@ -151,7 +151,7 @@ private:
 class Grass : public Object{
 public :
 	Grass();
-	void loadData(const std::string& object_name);
+	void loadData(const std::string& object_name, const std::string& text_name);
 	void draw();
 };
 

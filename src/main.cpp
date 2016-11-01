@@ -195,14 +195,14 @@ int main(int argc, const char* argv[]){
 	// Objects //
 	/////////////
 	
-	// t = new Terrain;
-	// t->loadData("plane.obj", "map.ktx");
-	// t->bindProgram(ter_program);
+	t = new Terrain;
+	t->loadData("plane.obj", "map.ktx");
+	t->bindProgram(ter_program);
 
-	// grass = new Grass;
-	// grass->loadData("grass.obj");
-	// grass->bindProgram(grass_program);
-	// grass->scale(0.01f, 0.01f, 0.01f);
+	grass = new Grass;
+	grass->loadData("grass.obj", "green.ktx");
+	grass->bindProgram(grass_program);
+	grass->scale(0.01f, 0.01f, 0.01f);
 	
 
 	stark = new Object;
@@ -252,11 +252,11 @@ int main(int argc, const char* argv[]){
 		GLfloat min = 1.0f;
 		glClearBufferfv(GL_DEPTH, 0, &min);
 
-		// glUseProgram(ter_program);
-		// c->bindProgram(ter_program);
-		// glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		// glUniform3fv(3, 1, glm::value_ptr(light));
-		// t->draw();
+		glUseProgram(ter_program);
+		c->bindProgram(ter_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		glUniform3fv(3, 1, glm::value_ptr(light));
+		t->draw();
 
 		glUseProgram(height_program);
 		c->bindProgram(height_program);
@@ -271,11 +271,11 @@ int main(int argc, const char* argv[]){
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		plane->draw();
 
-		// glUseProgram(grass_program);
-		// c->bindProgram(grass_program);
-		// glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		// glUniform3fv(3, 1, glm::value_ptr(light));
-		// grass->draw();
+		glUseProgram(grass_program);
+		c->bindProgram(grass_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		glUniform3fv(3, 1, glm::value_ptr(light));
+		grass->draw();
 
 		
 		glfwSwapBuffers(window);

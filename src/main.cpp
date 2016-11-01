@@ -14,7 +14,7 @@ CreateProgram create_program;
 Camera *c;
 Terrain *t;
 Object *plane;
-Object *tree, *tree2, *tree3;
+Object *tree, *tree2, *tree3, *stark;
 Grass *grass;
 float d = 0.1f;
 glm::mat4 proj;
@@ -204,6 +204,13 @@ int main(int argc, const char* argv[]){
 	// grass->bindProgram(grass_program);
 	// grass->scale(0.01f, 0.01f, 0.01f);
 	
+
+	stark = new Object;
+	stark->loadData("iron_man.obj", "iron_man.ktx");
+	stark->bindProgram(height_program);
+	stark->scale(0.01f, 0.01f, 0.01f);
+	stark->translate(0.2f, 0.0f, 0.0f);
+	
 	plane = new Object;
 	plane->loadData("plane.obj", "yellow.ktx");
 	plane->bindProgram(simple_program);
@@ -218,7 +225,7 @@ int main(int argc, const char* argv[]){
 	tree2->bindProgram(height_program);
 	tree2->scale(0.01f, 0.01f, 0.01f);
 	tree2->translate(0.1f, 0.0f, 0.1f);
-;
+
 	tree3 = new Object;
 	tree3->loadData("tree.obj", "red.ktx");
 	tree3->bindProgram(height_program);
@@ -257,6 +264,7 @@ int main(int argc, const char* argv[]){
 		tree->draw();
 		tree2->draw();
 		tree3->draw();
+		stark->draw();
 
 		glUseProgram(simple_program);
 		c->bindProgram(simple_program);

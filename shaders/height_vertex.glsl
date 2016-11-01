@@ -17,7 +17,7 @@ void main(){
 	vec4 pos = vec4(vertex, 1.0f);
 
 	mat4 m_model = model;
-	m_model[3].y += texture(height, vec2(model[3].x, model[3].z) * 0.5f + 0.5f).a * 0.15f;
+	m_model[3].y += texture(height, model[3].xz * 0.5f + 0.5f).a * 0.15f;
 
 	gl_Position = proj * view * m_model * pos;
 	

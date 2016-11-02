@@ -23,8 +23,8 @@ mat4 grass_translation(void){
 
 	coord.x = float(gl_InstanceID & 0x01ff) + ((gl_InstanceID * 3 + 191) % 200 - 100) / 20.0f;
 	coord.z = float((gl_InstanceID & 0x3fe00) >> 9) + ((gl_InstanceID * 29 + 383) % 200 - 100) / 20.0f;
-	//coord.xz = fma(coord.xz, vec2(0.0078125), vec2(-1.0f));
 	coord.xz = coord.xz / 256.0f - vec2(1.0f);
+	coord.xz = clamp(coord.xz, vec2(-0.99f), vec2(0.99f));
 
 	coord.y = texture(height, coord.xz * 0.5f + 0.5f).a * 0.15f;
 	

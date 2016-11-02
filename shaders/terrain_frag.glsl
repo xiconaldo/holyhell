@@ -16,5 +16,6 @@ void main(){
 	float intensity = -dot(normal, local_light);
 	if(intensity < 0.4f) intensity = 0.4f;	
 
-	color = texture(grass, text_coord*50.0f) * pow(intensity, 2);
+	vec4 text_color = texture(grass, text_coord*50.0f);
+	color = vec4(text_color.xyz * pow(intensity, 2), text_color.a);
 }

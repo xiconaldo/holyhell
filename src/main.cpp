@@ -196,7 +196,7 @@ int main(int argc, const char* argv[]){
 	/////////////
 	
 	t = new Terrain;
-	t->loadData("plane.obj", "map.ktx");
+	t->loadData("plane.obj", "dirt.ktx", "map.ktx");
 	t->bindProgram(ter_program);
 
 	grass = new Grass;
@@ -204,7 +204,6 @@ int main(int argc, const char* argv[]){
 	grass->bindProgram(grass_program);
 	grass->scale(0.01f, 0.01f, 0.01f);
 	
-
 	stark = new Object;
 	stark->loadData("iron_man.obj", "iron_man.ktx");
 	stark->bindProgram(height_program);
@@ -219,23 +218,28 @@ int main(int argc, const char* argv[]){
 	tree->loadData("tree.obj", "pine_tree.ktx");
 	tree->bindProgram(height_program);
 	tree->scale(0.01f, 0.01f, 0.01f);
+	tree->scale(3.0f);
 
 	tree2 = new Object;
-	tree2->loadData("tree.obj", "grass.ktx");
+	tree2->loadData("tree.obj", "pine_tree.ktx");
 	tree2->bindProgram(height_program);
 	tree2->scale(0.01f, 0.01f, 0.01f);
+	tree2->scale(3.0f);
 	tree2->translate(0.1f, 0.0f, 0.1f);
 
 	tree3 = new Object;
-	tree3->loadData("tree.obj", "red.ktx");
+	tree3->loadData("tree.obj", "pine_tree.ktx");
 	tree3->bindProgram(height_program);
 	tree3->scale(0.01f, 0.01f, 0.01f);
+	tree3->scale(3.0f);
 	tree3->translate(-0.1f, 0.0f, 0.1f);
 
 	c = new Camera(0, 0, 2, 0, 0, -1);
 	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);	
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_DEPTH_TEST);
 	glCullFace(GL_BACK);
@@ -258,14 +262,6 @@ int main(int argc, const char* argv[]){
 		glUniform3fv(3, 1, glm::value_ptr(light));
 		t->draw();
 
-		glUseProgram(height_program);
-		c->bindProgram(height_program);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		tree->draw();
-		tree2->draw();
-		tree3->draw();
-		stark->draw();
-
 		glUseProgram(simple_program);
 		c->bindProgram(simple_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
@@ -276,6 +272,14 @@ int main(int argc, const char* argv[]){
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
 		grass->draw();
+
+		glUseProgram(height_program);
+		c->bindProgram(height_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		tree->draw();
+		tree2->draw();
+		tree3->draw();
+		stark->draw();
 
 		
 		glfwSwapBuffers(window);

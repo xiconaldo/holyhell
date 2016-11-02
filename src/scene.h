@@ -98,9 +98,11 @@ public:
 	void localRotate(int xc, int yc, int zc, float degrees);
 	void localTranslate(float x, float y, float z);
 	void localScale(float x, float y, float z);
+	void localScale(float xyz);
 	void rotate(int xc, int yc, int zc, float degrees);
 	void translate(float x, float y, float z);
 	void scale(float x, float y, float z);
+	void scale(float xyz);
 	void bindProgram(GLuint program);
 	void resetMatrix();
 	void draw();
@@ -139,7 +141,7 @@ protected:
 class Terrain : public Object{
 public:
 	Terrain();
-	void loadData(const std::string& object_name, const std::string& text_name);
+	void loadData(const std::string& object_name, const std::string& text_name, const std::string& text_map_name);
 	void draw();
 
 private:
@@ -151,7 +153,6 @@ private:
 class Grass : public Object{
 public :
 	Grass();
-	void loadData(const std::string& object_name, const std::string& text_name);
 	void draw();
 };
 

@@ -70,6 +70,11 @@ void Object::localScale(float x, float y, float z){
 	updateModelMatrix();
 }
 
+void Object::localScale(float xyz){
+	m_model = m_model * glm::scale(glm::vec3(xyz));
+	updateModelMatrix();
+}
+
 void Object::rotate(int xc, int yc, int zc, float degrees){
 	m_model = glm::rotate(degrees, glm::vec3(xc, yc, zc)) * m_model;
 	updateModelMatrix();
@@ -82,6 +87,11 @@ void Object::translate(float x, float y, float z){
 
 void Object::scale(float x, float y, float z){
 	m_model = glm::scale(glm::vec3(x, y, z)) * m_model;
+	updateModelMatrix();
+}
+
+void Object::scale(float xyz){
+	m_model = glm::scale(glm::vec3(xyz)) * m_model;
 	updateModelMatrix();
 }
 
@@ -142,7 +152,7 @@ void Object::draw(){
 void Object::verifyTextError(KTX_error_code_t code){
 	switch(code){
 		case KTX_SUCCESS:
-			std::cout << "KTX_SUCCESS" << std::endl;
+			//std::cout << "KTX_SUCCESS" << std::endl;
 			break;
 		case KTX_FILE_OPEN_FAILED:
 			std::cout << "KTX_FILE_OPEN_FAILED" << std::endl;

@@ -15,5 +15,7 @@ void main(){
 	intensity = -dot(norm_coord, local_light);
 	if(intensity < 0.2) intensity = 0.2;
 	//color = vec4(0.0f, 0.6f, 0.2f, 1.0f) * pow(intensity, 2);
-	color = texture(object_texture, text_coord) * pow(intensity, 2);
+
+	vec4 text_color = texture(object_texture, text_coord);
+	color = vec4(text_color.xyz * pow(intensity, 2), text_color.a);
 }

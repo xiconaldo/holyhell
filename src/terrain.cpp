@@ -9,7 +9,7 @@ Terrain::Terrain(){}
  * Carrega os dados do objeto em um buffer.
  * @param object_name nome do arquivo onde se encontram os dados.
  */
-void Terrain::loadData(const std::string& object_name, const std::string& text_name){
+void Terrain::loadData(const std::string& object_name, const std::string& text_name, const std::string& text_map_name){
 	
 	load_grouped_data(base_data_location + object_name, triangle_count, data, false);
 
@@ -26,11 +26,11 @@ void Terrain::loadData(const std::string& object_name, const std::string& text_n
 	glBindSampler(text_target, samp);
 
 	glActiveTexture(GL_TEXTURE0);
-	KTX_error_code_t error = ktxLoadTextureN((base_text_location + "dirt.ktx").c_str(), &text_gl_name, &text_target, NULL, NULL, NULL, NULL, NULL);
+	KTX_error_code_t error = ktxLoadTextureN((base_text_location + text_name).c_str(), &text_gl_name, &text_target, NULL, NULL, NULL, NULL, NULL);
 	verifyTextError(error);
 
 	glActiveTexture(GL_TEXTURE1);
-	error = ktxLoadTextureN((base_text_location + text_name).c_str(), &text_map, &text_target, NULL, NULL, NULL, NULL, NULL);
+	error = ktxLoadTextureN((base_text_location + text_map_name).c_str(), &text_map, &text_target, NULL, NULL, NULL, NULL, NULL);
 	verifyTextError(error);
 }
 

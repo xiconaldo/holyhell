@@ -72,37 +72,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
 		c->translate(0.01f, 0, 0);
-
-	if (key == GLFW_KEY_H && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		tree->translate(0.01f, 0, 0);
-
-	if (key == GLFW_KEY_G && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		tree->translate(-0.01f, 0, 0);
-
-	if (key == GLFW_KEY_B && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		tree->translate(0.0f, 0, 0.01f);
-
-	if (key == GLFW_KEY_Y && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		tree->translate(0.0f, 0, -0.01f);
-
-	if (key == GLFW_KEY_U && (action == GLFW_PRESS || action == GLFW_REPEAT)){
-		light = rotP * light;
-		glUniform3fv(3, 1, glm::value_ptr(light));
-	}
-
-	if (key == GLFW_KEY_I && (action == GLFW_PRESS || action == GLFW_REPEAT)){
-		light = rotN * light;
-		glUniform3fv(3, 1, glm::value_ptr(light));
-	}
-
-	if (key == GLFW_KEY_L && action == GLFW_PRESS)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	if (key == GLFW_KEY_K && action == GLFW_PRESS){
-		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-		glPointSize(10.0f);
-	}
-	if (key == GLFW_KEY_M && action == GLFW_PRESS)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos){
@@ -147,8 +116,10 @@ int main(int argc, const char* argv[]){
 	// Window Initialization //
 	///////////////////////////
 	//GLFWwindow* window = glfwCreateWindow(800, 600, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
-	GLFWwindow* window = glfwCreateWindow(1024, 768, "Projeto de Computação Gráfica", NULL, NULL);
+	//GLFWwindow* window = glfwCreateWindow(1024, 768, "Projeto de Computação Gráfica", NULL, NULL);
 	//GLFWwindow* window = glfwCreateWindow(1366, 768, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
+	
+	GLFWwindow* window = glfwCreateWindow(1024, 576, "Projeto de Computação Gráfica", NULL, NULL);
 	
 	if (!window){
 		glfwTerminate();

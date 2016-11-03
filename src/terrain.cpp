@@ -29,16 +29,17 @@ void Terrain::loadData(const std::string& object_name, const std::string& text_n
 	KTX_error_code_t error = ktxLoadTextureN((base_text_location + text_name).c_str(), &text_gl_name, &text_target, NULL, NULL, NULL, NULL, NULL);
 	verifyTextError(error);
 
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE5);
 	error = ktxLoadTextureN((base_text_location + text_map_name).c_str(), &text_map, &text_target, NULL, NULL, NULL, NULL, NULL);
 	verifyTextError(error);
 }
 
 void Terrain::draw(){
+	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(text_target, text_gl_name);
 
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(text_target, text_map);
 
 	glBindVertexArray(vao);

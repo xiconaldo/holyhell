@@ -152,11 +152,8 @@ void Object::resetMatrix(){
  * Desenha o objeto na tela.
  */
 void Object::draw(){
-
+	
 	glActiveTexture(GL_TEXTURE0);
-	//glActiveTexture(TextureControl::instance().retriveUnit());
-
-
 	glBindTexture(text_target, text_gl_name);
 
 	glBindVertexArray(vao);

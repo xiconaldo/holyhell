@@ -6,7 +6,7 @@
 Grass::Grass(){}
 
 void Grass::draw(){
-
+	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(text_target, text_gl_name);
 

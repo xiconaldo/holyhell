@@ -121,14 +121,12 @@ int main(int argc, const char* argv[]){
 	//////////////////////
 	// Program begining //
 	//////////////////////
+	GLenum flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 	GLenum ter_flags[] = {GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_FRAGMENT_SHADER};
+
 	std::string ter_names[] = {"terrain_vertex.glsl", "terrain_tess_ct.glsl", "terrain_tess_ev.glsl", "terrain_frag.glsl"};
 	GLuint ter_program = create_program(4, ter_flags, ter_names);
-
-	GLenum flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
-	std::string names[] = {"default_vertex.glsl", "default_frag.glsl"};
-	GLuint simple_program = create_program(2, flags, names);
-
+	
 	std::string h_names[] = {"height_vertex.glsl", "default_frag.glsl"};
 	GLuint height_program = create_program(2, flags, h_names);
 
@@ -148,16 +146,6 @@ int main(int argc, const char* argv[]){
 	grass->loadData("grass.obj", "green.ktx");
 	grass->bindProgram(grass_program);
 	grass->scale(0.01f, 0.01f, 0.01f);
-	
-	stark = new Object;
-	stark->loadData("iron_man.obj", "iron_man.ktx");
-	stark->bindProgram(height_program);
-	stark->scale(0.01f, 0.01f, 0.01f);
-	stark->translate(0.2f, 0.0f, 0.0f);
-	
-	plane = new Object;
-	plane->loadData("plane.obj", "green.ktx");
-	plane->bindProgram(simple_program);
 
 	tree = new Object;
 	tree->loadData("tree.obj", "pine_tree.ktx");
@@ -183,17 +171,15 @@ int main(int argc, const char* argv[]){
 	me->loadData("iron_man.obj", "iron_man.ktx");
 	me->bindProgram(height_program);
 	me->scale(0.01f, 0.01f, 0.01f);
-	me->translate(0.2f, 0.0f, 0.0f);
+	me->translate(0.1f, 0.0f, 0.0f);
 
-	c = new Camera(0, 0.2f, -0.2f, me->x(), me->y(), 0);
+	c = new Camera(0, 0.2f, -0.1f, me->x(), me->y(), 0.2f);
 	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);	
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_DEPTH_TEST);
-	glCullFace(GL_BACK);
 	
 	///////////////
 	// Main Loop //
@@ -259,11 +245,6 @@ int main(int argc, const char* argv[]){
 		glUniform3fv(3, 1, glm::value_ptr(light));
 		t->draw();
 
-		glUseProgram(simple_program);
-		c->bindProgram(simple_program);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		plane->draw();
-
 		glUseProgram(grass_program);
 		c->bindProgram(grass_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
@@ -276,7 +257,6 @@ int main(int argc, const char* argv[]){
 		tree->draw();
 		tree2->draw();
 		tree3->draw();
-		stark->draw();
 		me->draw();
 
 		Input::instance().resetMouse();
@@ -287,9 +267,11 @@ int main(int argc, const char* argv[]){
 
 		currentTime = glfwGetTime();
 
-		if(frame%120 == 0)
-			std::cout << 1/(currentTime - lastTime) << " fps" << std::endl;
 		frame++;
+		if(frame%120 == 0){
+			std::cout << int(1/(currentTime - lastTime)) << " fps" << "\t" << frame << " frames" << std::endl;
+		}
+		
 	}
 
 	/////////////////

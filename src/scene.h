@@ -8,7 +8,6 @@
 #define  KTX_OPENGL 1
 #include <ktx.h>
 #include <input.h>
-#include <texture_control.h>
 
 /**
  * Conjunto de objetos que representam objetos da cena, tais
@@ -30,7 +29,7 @@
  * 		- Classe para fontes de luz, informando o tipo de luz e os 
  * 		parâmetros da mesma, além de sua posição e posssível direção.
  *
- * 		- Classe personagem, semelhante aos objetos estáticos, com a 
+ * 		+ Classe personagem, semelhante aos objetos estáticos, com a 
  * 		diferença de apresentar métodos para controle do personagem 
  * 		através de interação.
  */
@@ -135,6 +134,7 @@ protected:
 	GLuint program;
 
 	GLuint text_gl_name;
+	GLuint text_map;
 	GLuint samp;
 	GLenum text_target;
 
@@ -150,7 +150,6 @@ public:
 	void draw();
 
 private:
-	GLuint text_map;
 };
 
 

@@ -5,7 +5,8 @@ layout(quads, equal_spacing, ccw) in;
 layout (location = 0) uniform mat4 model = mat4(1.0f);
 layout (location = 1) uniform mat4 view  = mat4(1.0f);
 layout (location = 2) uniform mat4 proj  = mat4(1.0f);
-layout (binding  = 1) uniform sampler2D height_map;
+
+layout (binding  = 5) uniform sampler2D height_map;
 
 out vec2 text_coord;
 out vec4 light;

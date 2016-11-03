@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -std=c++11
 CXXFLAGS_DEBUG = $(CXXFLAGS) -g3
 LDLIBS = -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -lpthread -ldl -lktx.gl
-SOURCES = src/main.cpp src/loader.cpp src/shader.cpp src/camera.cpp src/object.cpp src/terrain.cpp src/grass.cpp src/input.cpp src/player.cpp src/texture_control.cpp
+SOURCES = src/main.cpp src/loader.cpp src/shader.cpp src/camera.cpp src/object.cpp src/terrain.cpp src/grass.cpp src/input.cpp src/player.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 EXECUTABLE = bin/sword.run
 INC = -Isrc -Iinclude

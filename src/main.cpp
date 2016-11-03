@@ -50,11 +50,22 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	Input::instance().update(key, action);
+	Input::instance().updateKey(key, action);
 }
 
-void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos){
-	Input::instance().update(xpos, ypos);
+void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	Input::instance().updateMouseMotion(xpos, ypos);
+}
+
+void joystick_callback(int joy, int event)
+{
+    if (event == GLFW_CONNECTED){
+        std::cout << "The joystick was connected" << std::endl;
+    }
+    else if (event == GLFW_DISCONNECTED){
+        std::cout << "The joystick was disconnected" << std::endl;
+    }
 }
 
 
@@ -95,6 +106,7 @@ int main(int argc, const char* argv[]){
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, cursor_pos_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetJoystickCallback(joystick_callback);
 	//glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
 	/////////////////////////
@@ -193,20 +205,45 @@ int main(int argc, const char* argv[]){
 	while (!glfwWindowShouldClose(window))
 	{
 
-		if (Input::instance().getState(GLFW_KEY_A))
+		if (Input::instance().getStateKey(GLFW_KEY_A))
 			c->rotate(0, 0, 1, 0.01);
 
-		if (Input::instance().getState(GLFW_KEY_D))
+		if (Input::instance().getStateKey(GLFW_KEY_D))
 			c->rotate(0, 0, 1, -0.01);
 
-		if (Input::instance().getState(GLFW_KEY_W))
+		if (Input::instance().getStateKey(GLFW_KEY_W))
 			c->translate(0, 0, -0.01f);
 
-		if (Input::instance().getState(GLFW_KEY_S))
+		if (Input::instance().getStateKey(GLFW_KEY_S))
 			c->translate(0, 0, 0.01f);
 
-		c->rotate(0, 1, 0, -0.01f * Input::instance().moveX());
-		c->rotate(1, 0, 0, -0.01f * Input::instance().moveY());
+		c->rotate(0, 1, 0, -0.01f * Input::instance().moveMouseX());
+		c->rotate(1, 0, 0, -0.01f * Input::instance().moveMouseY());
+
+		if(glfwJoystickPresent(GLFW_JOYSTICK_1)){
+
+			Input::instance().updateJoyButton();
+			Input::instance().updateJoyAxes();
+
+			c->rotate(0, 1, 0, -0.01f * Input::instance().moveJoyAxis2X()*7);
+			c->rotate(1, 0, 0, -0.01f * Input::instance().moveJoyAxis2Y()*5);
+
+			if (Input::instance().moveJoyAxis1X() < 0.0f)
+				c->translate(-0.01f, 0, 0);
+
+			if (Input::instance().moveJoyAxis1X() > 0.0f)
+				c->translate(0.01f, 0, 0);
+
+			if (Input::instance().moveJoyAxis1Y() < 0.0f)
+				c->translate(0, 0, -0.01f);
+
+			if (Input::instance().moveJoyAxis1Y() > 0.0f)
+				c->translate(0, 0, 0.01f);
+
+			if(Input::instance().isJustPressedJoyButton(1))
+				glfwSetWindowShouldClose(window, GL_TRUE);
+		}
+
 
 		lastTime = glfwGetTime();
 
@@ -242,7 +279,8 @@ int main(int argc, const char* argv[]){
 		stark->draw();
 		me->draw();
 
-		Input::instance().reset();
+		Input::instance().resetMouse();
+		Input::instance().resetJoyAxes();
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -250,7 +288,6 @@ int main(int argc, const char* argv[]){
 		currentTime = glfwGetTime();
 
 		if(frame%120 == 0)
-			//std::cout << (currentTime - lastTime)*1000 << " ms" << std::endl;
 			std::cout << 1/(currentTime - lastTime) << " fps" << std::endl;
 		frame++;
 	}

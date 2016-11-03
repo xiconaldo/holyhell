@@ -10,22 +10,46 @@ public:
 	~Input();
     void operator=(Input const& copy) = delete;
 
-	void update(int key, int action);
-	bool isJustPressed(int key);
-	bool isReleased(int key);
-	bool isPressed(int key);
-	int  getState(int key);
+	void updateKey(int key, int action);
+	bool isJustPressedKey(int key);
+	bool isReleasedKey(int key);
+	bool isPressedKey(int key);
+	int  getStateKey(int key);
 
-	void update(double xpos, double ypos);
-	double moveX();
-	double moveY();
-	void reset();
+	void updateMouseMotion(double xpos, double ypos);
+	void updateMouseButton(int button, int action);
+	bool isJustPressedButton(int button);
+	bool isReleasedButton(int button);
+	bool isPressedButton(int button);
+	int  getStateButton(int button);
+	double moveMouseX();
+	double moveMouseY();
+	void resetMouse();
+
+	void updateJoyButton();
+	bool isJustPressedJoyButton(int key);
+	bool isReleasedJoyButton(int key);
+	bool isPressedJoyButton(int key);
+	int  getStateJoyButton(int key);
+
+	void updateJoyAxes();
+	double moveJoyAxis1X();
+	double moveJoyAxis1Y();
+	double moveJoyAxis2X();
+	double moveJoyAxis2Y();
+	void resetJoyAxes();
 
 private:
 	Input();
 	int *keyboard;
-	double dx;
-	double dy;
+	int *mouse;
+	unsigned char *joystickButtons;
+	double mouse_dx;
+	double mouse_dy;
+	double axis1_dx;
+	double axis1_dy;
+	double axis2_dx;
+	double axis2_dy;
 };
 
 #endif

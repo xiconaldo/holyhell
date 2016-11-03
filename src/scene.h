@@ -5,8 +5,9 @@
 #include <loader.h>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#define KTX_OPENGL 1
+#define  KTX_OPENGL 1
 #include <ktx.h>
+#include <input.h>
 
 /**
  * Conjunto de objetos que representam objetos da cena, tais
@@ -103,6 +104,9 @@ public:
 	void translate(float x, float y, float z);
 	void scale(float x, float y, float z);
 	void scale(float xyz);
+	float x();
+	float y();
+	float z();
 	void bindProgram(GLuint program);
 	void resetMatrix();
 	void draw();
@@ -153,6 +157,13 @@ private:
 class Grass : public Object{
 public :
 	Grass();
+	void draw();
+};
+
+// Player
+class Player : public Object{
+public:
+	Player();
 	void draw();
 };
 

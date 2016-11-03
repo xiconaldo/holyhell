@@ -95,6 +95,18 @@ void Object::scale(float xyz){
 	updateModelMatrix();
 }
 
+float Object::x(){
+	return m_model[3].x;
+}
+
+float Object::y(){
+	return m_model[3].y;
+}
+
+float Object::z(){
+	return m_model[3].z;
+}
+
 /**
  * Associa os valores do vertex buffer e a matriz model aos 
  * respectivos atributos do programa especificado.

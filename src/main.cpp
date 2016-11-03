@@ -6,6 +6,7 @@
 #include <loader.h>
 #include <shader.h>
 #include <scene.h>
+#include <input.h>
 
 #define KTX_OPENGL 1
 #include <ktx.h>
@@ -15,8 +16,8 @@ Camera *c;
 Terrain *t;
 Object *plane;
 Object *tree, *tree2, *tree3, *stark;
+Player *me;
 Grass *grass;
-float d = 0.1f;
 glm::mat4 proj;
 glm::vec4 light = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
 glm::mat4 rotP = glm::rotate(0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -49,50 +50,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	if (key == GLFW_KEY_LEFT && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->rotate(0, 0, 1, 0.01);
-
-	if (key == GLFW_KEY_RIGHT && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->rotate(0, 0, 1, -0.01);
-
-	if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->rotate(1, 0, 0, 0.01);
-
-	if (key == GLFW_KEY_UP && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->rotate(1, 0, 0, -0.01);
-
-	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->translate(0, 0, -0.01f);
-
-	if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->translate(0, 0, 0.01f);
-
-	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->translate(-0.01f, 0, 0);
-
-	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		c->translate(0.01f, 0, 0);
+	Input::instance().update(key, action);
 }
 
 void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos){
-	static double prev_x = 0.0, prev_y = 0.0;
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
-
-	if(xpos-prev_x < 0)
-		c->rotate(0, 1, 0, 0.02);
-
-	if(xpos-prev_x > 0)
-		c->rotate(0, 1, 0, -0.02);
-
-	if(ypos-prev_y < 0)
-		c->rotate(1, 0, 0, 0.02);
-
-	if(ypos-prev_y > 0)
-		c->rotate(1, 0, 0, -0.02);
-
-	prev_x = xpos;
-	prev_y = ypos;
+	Input::instance().update(xpos, ypos);
 }
 
 
@@ -182,7 +144,7 @@ int main(int argc, const char* argv[]){
 	stark->translate(0.2f, 0.0f, 0.0f);
 	
 	plane = new Object;
-	plane->loadData("plane.obj", "yellow.ktx");
+	plane->loadData("plane.obj", "green.ktx");
 	plane->bindProgram(simple_program);
 
 	tree = new Object;
@@ -205,7 +167,13 @@ int main(int argc, const char* argv[]){
 	tree3->scale(3.0f);
 	tree3->translate(-0.1f, 0.0f, 0.1f);
 
-	c = new Camera(0, 0, 2, 0, 0, -1);
+	me = new Player;
+	me->loadData("iron_man.obj", "iron_man.ktx");
+	me->bindProgram(height_program);
+	me->scale(0.01f, 0.01f, 0.01f);
+	me->translate(0.2f, 0.0f, 0.0f);
+
+	c = new Camera(0, 0.2f, -0.2f, me->x(), me->y(), 0);
 	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);	
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
@@ -218,14 +186,35 @@ int main(int argc, const char* argv[]){
 	///////////////
 	// Main Loop //
 	///////////////
+	
+	double lastTime, currentTime;
+	int frame = 0;
+
 	while (!glfwWindowShouldClose(window))
 	{
+
+		if (Input::instance().getState(GLFW_KEY_A))
+			c->rotate(0, 0, 1, 0.01);
+
+		if (Input::instance().getState(GLFW_KEY_D))
+			c->rotate(0, 0, 1, -0.01);
+
+		if (Input::instance().getState(GLFW_KEY_W))
+			c->translate(0, 0, -0.01f);
+
+		if (Input::instance().getState(GLFW_KEY_S))
+			c->translate(0, 0, 0.01f);
+
+		c->rotate(0, 1, 0, -0.01f * Input::instance().moveX());
+		c->rotate(1, 0, 0, -0.01f * Input::instance().moveY());
+
+		lastTime = glfwGetTime();
 
 		const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
 
-		GLfloat min = 1.0f;
-		glClearBufferfv(GL_DEPTH, 0, &min);
+		GLfloat far = 1.0f;
+		glClearBufferfv(GL_DEPTH, 0, &far);
 
 		glUseProgram(ter_program);
 		c->bindProgram(ter_program);
@@ -251,10 +240,19 @@ int main(int argc, const char* argv[]){
 		tree2->draw();
 		tree3->draw();
 		stark->draw();
+		me->draw();
 
+		Input::instance().reset();
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
+		currentTime = glfwGetTime();
+
+		if(frame%120 == 0)
+			//std::cout << (currentTime - lastTime)*1000 << " ms" << std::endl;
+			std::cout << 1/(currentTime - lastTime) << " fps" << std::endl;
+		frame++;
 	}
 
 	/////////////////

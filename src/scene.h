@@ -8,6 +8,7 @@
 #define  KTX_OPENGL 1
 #include <ktx.h>
 #include <input.h>
+#include <texture_control.h>
 
 /**
  * Conjunto de objetos que representam objetos da cena, tais

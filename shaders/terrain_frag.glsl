@@ -1,6 +1,7 @@
 #version 430 core
 
 layout (location = 3) uniform vec3 light = vec3(0.0f, 0.0f, -1.0f);
+
 layout (binding  = 0) uniform sampler2D grass;
 layout (binding  = 1) uniform sampler2D height_map;
 

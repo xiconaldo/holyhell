@@ -7,6 +7,7 @@ layout (location = 2) in vec2 uv;
 layout (location = 0) uniform mat4 model = mat4(1.0f);
 layout (location = 1) uniform mat4 view  = mat4(1.0f);
 layout (location = 2) uniform mat4 proj  = mat4(1.0f);
+
 layout (binding  = 1) uniform sampler2D height;
 
 out vec3 norm_coord;

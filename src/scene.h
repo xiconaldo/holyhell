@@ -75,6 +75,10 @@ public:
 
 	void bindProgram(GLuint program);
 
+	void adjust(GLuint program); // NOVO
+
+	void loadBuffers(GLuint program); // NOVO
+
 private:
 
 	glm::vec3 position;
@@ -84,6 +88,7 @@ private:
 	glm::mat4 m_view;
 	GLuint view_location;
 	GLuint program;
+	GLuint shader_storage_buffer;
 
 	//void updateView();
 	void updateViewMatrix();
@@ -165,6 +170,7 @@ class Player : public Object{
 public:
 	Player();
 	void draw();
+	void adjustCamera(GLuint program);
 };
 
 

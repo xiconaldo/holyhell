@@ -20,5 +20,8 @@ void main(){
 	float height = texture(height_map, text_coord).a;
 	pos.y += height * 0.15f;
 
+	// mat4 norm_mat = transpose(inverse(m_model)); // Novo
+	// norm_coord = normalize((norm_mat * vec4(normal, 1.0f)).xyz); // Novo
+
 	gl_Position = proj * view * model * pos;
 }

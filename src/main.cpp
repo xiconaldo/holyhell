@@ -123,6 +123,7 @@ int main(int argc, const char* argv[]){
 	//////////////////////
 	GLenum flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 	GLenum ter_flags[] = {GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_FRAGMENT_SHADER};
+	GLenum comp_flags[] = {GL_COMPUTE_SHADER};
 
 	std::string ter_names[] = {"terrain_vertex.glsl", "terrain_tess_ct.glsl", "terrain_tess_ev.glsl", "terrain_frag.glsl"};
 	GLuint ter_program = create_program(4, ter_flags, ter_names);
@@ -132,6 +133,9 @@ int main(int argc, const char* argv[]){
 
 	std::string g_names[] = {"grass_vertex.glsl", "grass_frag.glsl"};
 	GLuint grass_program = create_program(2, flags, g_names);
+
+	std::string cam_names[] = {"camera_compute.glsl"};
+	GLuint camera_program = create_program(1, comp_flags, cam_names);	
 
 
 	/////////////
@@ -174,6 +178,7 @@ int main(int argc, const char* argv[]){
 	me->translate(0.1f, 0.0f, 0.0f);
 
 	c = new Camera(0, 0.2f, -0.1f, me->x(), me->y(), 0.2f);
+	c->loadBuffers(0);
 	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);	
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
@@ -233,6 +238,11 @@ int main(int argc, const char* argv[]){
 
 		lastTime = glfwGetTime();
 
+		glUseProgram(camera_program);
+		c->adjust(camera_program);
+		me->adjustCamera(camera_program);
+		glDispatchCompute(1, 1, 1);
+
 		const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
 
@@ -268,8 +278,8 @@ int main(int argc, const char* argv[]){
 		currentTime = glfwGetTime();
 
 		frame++;
-		if(frame%120 == 0){
-			std::cout << int(1/(currentTime - lastTime)) << " fps" << "\t" << frame << " frames" << std::endl;
+		if(frame%300 == 0){
+			std::cout << 1/(currentTime - lastTime) << " fps" << "\t" << frame << " frames" << std::endl;
 		}
 		
 	}

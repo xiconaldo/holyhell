@@ -23,3 +23,7 @@ void Player::draw(){
 	Object::draw();
 
 }
+
+void Player::adjustCamera(GLuint program){
+	glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(m_model));
+}

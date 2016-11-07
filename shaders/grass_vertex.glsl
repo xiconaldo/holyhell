@@ -65,8 +65,10 @@ void main(){
 	mat4 scale = grass_scale();
 	
 	mat4 m_model = trans * rot * scale * model;
+	//mat4 norm_mat = transpose(inverse(m_model)); // Novo
 
 	gl_Position = proj * view * m_model * vec4(vertex, 1.0f);
+	//norm_coord = normalize((norm_mat * vec4(normal, 1.0f)).xyz); // Novo
 	norm_coord = normal;
 	text_coord = uv;
 }

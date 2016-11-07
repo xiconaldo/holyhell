@@ -19,7 +19,10 @@ void main(){
 	mat4 m_model = model;
 	m_model[3].y += texture(height_map, model[3].xz * 0.5f + 0.5f).a * 0.15f;
 
+	// mat4 norm_mat = transpose(inverse(m_model)); // Novo
+
 	gl_Position = proj * view * m_model * pos;
+	// norm_coord = normalize((norm_mat * vec4(normal, 1.0f)).xyz); // Novo
 	norm_coord = normal;
 	text_coord = uv;
 }

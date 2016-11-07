@@ -220,3 +220,14 @@ void Camera::bindProgram(GLuint program){
 void Camera::updateViewMatrix(){
 	glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(m_view));
 }
+
+void Camera::adjust(GLuint program){
+	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(m_view), glm::value_ptr(m_view));
+}
+
+void Camera::loadBuffers(GLuint program){
+	glGenBuffers(1, &shader_storage_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, shader_storage_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(m_view), glm::value_ptr(m_view), GL_STATIC_DRAW);
+
+}

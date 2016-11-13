@@ -147,6 +147,12 @@ int main(int argc, const char* argv[]){
 	grass->bindProgram(grass_program);
 	grass->scale(0.01f, 0.01f, 0.01f);
 
+	me = new Player;
+	me->loadData("iron_man.obj", "iron_man.ktx");
+	me->bindProgram(height_program);
+	me->scale(0.01f, 0.01f, 0.01f);
+	me->translate(0.1f, 0.0f, 0.0f);
+
 	tree = new Object;
 	tree->loadData("tree.obj", "pine_tree.ktx");
 	tree->bindProgram(height_program);
@@ -167,19 +173,16 @@ int main(int argc, const char* argv[]){
 	tree3->scale(3.0f);
 	tree3->translate(-0.1f, 0.0f, 0.1f);
 
-	me = new Player;
-	me->loadData("iron_man.obj", "iron_man.ktx");
-	me->bindProgram(height_program);
-	me->scale(0.01f, 0.01f, 0.01f);
-	me->translate(0.1f, 0.0f, 0.0f);
-
-	c = new Camera(0, 0.2f, -0.1f, me->x(), me->y(), 0.2f);
+	//c = new Camera(0, 0.2f, -0.1f, me->x(), me->y(), 0.2f);
+	c = new Camera(0, 0, 0, me->x(), 0.0f, me->z());
 	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);	
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
+	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
 	
 	///////////////
 	// Main Loop //
@@ -197,11 +200,11 @@ int main(int argc, const char* argv[]){
 		if (Input::instance().getStateKey(GLFW_KEY_D))
 			c->rotate(0, 0, 1, -0.01);
 
-		if (Input::instance().getStateKey(GLFW_KEY_W))
-			c->translate(0, 0, -0.01f);
+		// if (Input::instance().getStateKey(GLFW_KEY_W))
+		// 	c->translate(0, 0, -0.01f);
 
-		if (Input::instance().getStateKey(GLFW_KEY_S))
-			c->translate(0, 0, 0.01f);
+		// if (Input::instance().getStateKey(GLFW_KEY_S))
+		// 	c->translate(0, 0, 0.01f);
 
 		c->rotate(0, 1, 0, -0.01f * Input::instance().moveMouseX());
 		c->rotate(1, 0, 0, -0.01f * Input::instance().moveMouseY());

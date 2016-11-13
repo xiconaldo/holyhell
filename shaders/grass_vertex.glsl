@@ -8,6 +8,11 @@ layout (location = 0) uniform mat4 model = mat4(1.0f);
 layout (location = 1) uniform mat4 view  = mat4(1.0f);
 layout (location = 2) uniform mat4 proj  = mat4(1.0f);
 
+layout (std140, binding = 0) uniform Player{
+	float x;
+	float z;
+} player;
+
 layout (binding  = 5) uniform sampler2D height_map;
 
 out vec3 norm_coord;
@@ -66,7 +71,12 @@ void main(){
 	
 	mat4 m_model = trans * rot * scale * model;
 
-	gl_Position = proj * view * m_model * vec4(vertex, 1.0f);
+	mat4 m_view = mat4(1.0f);
+	m_view[3].x = -player.x;
+	m_view[3].z = -player.z;
+	m_view[3].y = -texture(height_map, -m_view[3].xz * 0.5f + 0.5f).a * 0.15f - 0.038f; 
+
+	gl_Position = proj * view * m_view * m_model * vec4(vertex, 1.0f);
 	norm_coord = normal;
 	text_coord = uv;
 }

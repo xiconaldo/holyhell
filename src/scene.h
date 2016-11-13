@@ -164,6 +164,7 @@ public :
 class Player : public Object{
 public:
 	Player();
+	void loadData(const std::string& object_name, const std::string& text_name = "");
 	void draw();
 };
 

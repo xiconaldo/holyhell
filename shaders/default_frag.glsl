@@ -17,4 +17,5 @@ void main(){
 
 	vec4 text_color = texture(base_texture, text_coord);
 	color = vec4(text_color.xyz * pow(intensity, 2), text_color.a);
+	//color = text_color;
 }

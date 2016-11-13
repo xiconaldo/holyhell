@@ -206,10 +206,22 @@ int main(int argc, const char* argv[]){
 		// if (Input::instance().getStateKey(GLFW_KEY_S))
 		// 	c->translate(0, 0, 0.01f);
 
-		if(Input::instance().moveMouseX())
-			c->rotate(0, 1, 0, -0.01f * Input::instance().moveMouseX());
-		if(Input::instance().moveMouseY())
+		static float vertical_angle = 0.0f;
+
+		if(Input::instance().moveMouseX()){
+			if(vertical_angle){
+				c->rotate(1, 0, 0, -vertical_angle);
+				c->rotate(0, 1, 0, -0.01f * Input::instance().moveMouseX());
+				c->rotate(1, 0, 0, vertical_angle);
+			}
+			else{
+				c->rotate(0, 1, 0, -0.01f * Input::instance().moveMouseX());
+			}
+		}
+		if(Input::instance().moveMouseY()){
 			c->rotate(1, 0, 0, -0.01f * Input::instance().moveMouseY());
+			vertical_angle += -0.01f * Input::instance().moveMouseY();
+		}
 
 		if(glfwJoystickPresent(GLFW_JOYSTICK_1)){
 

@@ -3,6 +3,9 @@
 
 #include <GLFW/glfw3.h>
 
+enum {JOY_TRIANGLE = 0, JOY_CIRCLE, JOY_CROSS, JOY_SQUARE, JOY_L1, JOY_R1, JOY_L2, JOY_R2, JOY_SELECT, JOY_START, JOY_L3, JOY_R3};
+enum {JOY_Y = 0, JOY_B, JOY_A, JOY_X, JOY_LB, JOY_RB, JOY_LT, JOY_RT, JOY_VIEW, JOY_MENU, JOY_LS, JOY_RS};
+
 class Input{
 public:
 	static Input& instance();

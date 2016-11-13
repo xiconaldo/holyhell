@@ -49,9 +49,32 @@ void Player::draw(){
 		localTranslate(0.1f * factor, 0.0f, 0.0f);
 	if(Input::instance().getStateKey(GLFW_KEY_S))
 	 	localTranslate(-0.1f * factor, 0.0f, 0.0f);
+	 if(Input::instance().getStateKey(GLFW_KEY_A))
+		localTranslate(0.0f, 0.0f, -0.1f * factor);
+	if(Input::instance().getStateKey(GLFW_KEY_D))
+	 	localTranslate(0.0f, 0.0f, 0.1f * factor);
 
 	if(Input::instance().moveMouseX())
 		localRotate(0, 1, 0, -0.01f * Input::instance().moveMouseX());
+
+
+	if(glfwJoystickPresent(GLFW_JOYSTICK_1)){
+		if(Input::instance().isJustPressedJoyButton(JOY_R1))
+			factor = 2.0f;
+
+		if (Input::instance().moveJoyAxis1X() > 0.0f)
+			localTranslate(0.0f, 0.0f, 0.1f * factor);
+		else if(Input::instance().moveJoyAxis1X() < 0.0f)
+			localTranslate(0.0f, 0.0f, -0.1f * factor);
+
+		if (Input::instance().moveJoyAxis1Y() > 0.0f)
+			localTranslate(-0.1f * factor, 0.0f, 0.0f);
+		else if (Input::instance().moveJoyAxis1Y() < 0.0f)
+			localTranslate(0.1f * factor, 0.0f, 0.0f);
+
+		if(Input::instance().moveJoyAxis2X())
+			localRotate(0, 1, 0, -0.01f * Input::instance().moveJoyAxis2X()*3);
+	}
 
 	const float position[] = {m_model[3].x, m_model[3].z};
 

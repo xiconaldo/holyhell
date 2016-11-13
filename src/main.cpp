@@ -194,11 +194,11 @@ int main(int argc, const char* argv[]){
 	while (!glfwWindowShouldClose(window))
 	{
 
-		if (Input::instance().getStateKey(GLFW_KEY_A))
-			c->rotate(0, 0, 1, 0.01);
+		// if (Input::instance().getStateKey(GLFW_KEY_A))
+		// 	c->rotate(0, 0, 1, 0.01);
 
-		if (Input::instance().getStateKey(GLFW_KEY_D))
-			c->rotate(0, 0, 1, -0.01);
+		// if (Input::instance().getStateKey(GLFW_KEY_D))
+		// 	c->rotate(0, 0, 1, -0.01);
 
 		// if (Input::instance().getStateKey(GLFW_KEY_W))
 		// 	c->translate(0, 0, -0.01f);
@@ -208,6 +208,10 @@ int main(int argc, const char* argv[]){
 
 		static float vertical_angle = 0.0f;
 
+		if(Input::instance().moveMouseY()){
+			c->rotate(1, 0, 0, -0.01f * Input::instance().moveMouseY());
+			vertical_angle += -0.01f * Input::instance().moveMouseY();
+		}
 		if(Input::instance().moveMouseX()){
 			if(vertical_angle){
 				c->rotate(1, 0, 0, -vertical_angle);
@@ -218,32 +222,46 @@ int main(int argc, const char* argv[]){
 				c->rotate(0, 1, 0, -0.01f * Input::instance().moveMouseX());
 			}
 		}
-		if(Input::instance().moveMouseY()){
-			c->rotate(1, 0, 0, -0.01f * Input::instance().moveMouseY());
-			vertical_angle += -0.01f * Input::instance().moveMouseY();
-		}
 
 		if(glfwJoystickPresent(GLFW_JOYSTICK_1)){
 
 			Input::instance().updateJoyButton();
 			Input::instance().updateJoyAxes();
 
-			c->rotate(0, 1, 0, -0.01f * Input::instance().moveJoyAxis2X()*7);
-			c->rotate(1, 0, 0, -0.01f * Input::instance().moveJoyAxis2Y()*5);
 
-			if (Input::instance().moveJoyAxis1X() < 0.0f)
-				c->translate(-0.01f, 0, 0);
+			if(Input::instance().moveJoyAxis2Y()){
+				c->rotate(1, 0, 0, -0.01f * Input::instance().moveJoyAxis2Y()*2);
+				vertical_angle += -0.01f * Input::instance().moveJoyAxis2Y()*2;
+			}
+			if(Input::instance().moveJoyAxis2X()){
+				if(vertical_angle){
+					c->rotate(1, 0, 0, -vertical_angle);
+					c->rotate(0, 1, 0, -0.01f * Input::instance().moveJoyAxis2X()*3);
+					c->rotate(1, 0, 0, vertical_angle);
+				}
+				else{
+					c->rotate(0, 1, 0, -0.01f * Input::instance().moveJoyAxis2X()*3);
+				}
+			}
 
-			if (Input::instance().moveJoyAxis1X() > 0.0f)
-				c->translate(0.01f, 0, 0);
 
-			if (Input::instance().moveJoyAxis1Y() < 0.0f)
-				c->translate(0, 0, -0.01f);
 
-			if (Input::instance().moveJoyAxis1Y() > 0.0f)
-				c->translate(0, 0, 0.01f);
+			//c->rotate(0, 1, 0, -0.01f * Input::instance().moveJoyAxis2X()*7);
+			//c->rotate(1, 0, 0, -0.01f * Input::instance().moveJoyAxis2Y()*5);
 
-			if(Input::instance().isJustPressedJoyButton(1))
+			// if (Input::instance().moveJoyAxis1X() < 0.0f)
+			// 	c->translate(-0.01f, 0, 0);
+
+			// if (Input::instance().moveJoyAxis1X() > 0.0f)
+			// 	c->translate(0.01f, 0, 0);
+
+			// if (Input::instance().moveJoyAxis1Y() < 0.0f)
+			// 	c->translate(0, 0, -0.01f);
+
+			// if (Input::instance().moveJoyAxis1Y() > 0.0f)
+			// 	c->translate(0, 0, 0.01f);
+
+			if(Input::instance().isJustPressedJoyButton(JOY_CIRCLE))
 				glfwSetWindowShouldClose(window, GL_TRUE);
 		}
 

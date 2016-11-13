@@ -130,7 +130,7 @@ int main(int argc, const char* argv[]){
 	std::string h_names[] = {"height_vertex.glsl", "default_frag.glsl"};
 	GLuint height_program = create_program(2, flags, h_names);
 
-	std::string g_names[] = {"grass_vertex.glsl", "grass_frag.glsl"};
+	std::string g_names[] = {"grass_vertex.glsl", "default_frag.glsl"};
 	GLuint grass_program = create_program(2, flags, g_names);
 
 
@@ -156,7 +156,7 @@ int main(int argc, const char* argv[]){
 	tree = new Object;
 	tree->loadData("tree.obj", "pine_tree.ktx");
 	tree->bindProgram(height_program);
-	tree->scale(0.01f, 0.01f, 0.01f);
+	tree->scale(0.015f);
 	tree->scale(3.0f);
 
 	tree2 = new Object;
@@ -206,8 +206,10 @@ int main(int argc, const char* argv[]){
 		// if (Input::instance().getStateKey(GLFW_KEY_S))
 		// 	c->translate(0, 0, 0.01f);
 
-		c->rotate(0, 1, 0, -0.01f * Input::instance().moveMouseX());
-		c->rotate(1, 0, 0, -0.01f * Input::instance().moveMouseY());
+		if(Input::instance().moveMouseX())
+			c->rotate(0, 1, 0, -0.01f * Input::instance().moveMouseX());
+		if(Input::instance().moveMouseY())
+			c->rotate(1, 0, 0, -0.01f * Input::instance().moveMouseY());
 
 		if(glfwJoystickPresent(GLFW_JOYSTICK_1)){
 
@@ -272,7 +274,7 @@ int main(int argc, const char* argv[]){
 
 		frame++;
 		if(frame%120 == 0){
-			std::cout << int(1/(currentTime - lastTime)) << " fps" << "\t" << frame << " frames" << std::endl;
+			std::cout << int(1/(currentTime - lastTime)) << " fps" << std::endl;
 		}
 		
 	}

@@ -1,6 +1,6 @@
 #version 430 core
 
-layout (location = 3) uniform vec3 light = vec3(0.0f, 0.0f, -1.0f);
+layout (location = 3) uniform vec3 light = vec3(-1.0f, -1.0f, -1.0f);
 layout (binding  = 0) uniform sampler2D base_texture;
 
 in 	vec3 norm_coord;

@@ -25,10 +25,10 @@ void main(){
 	float height = texture(height_map, text_coord).a;
 	pos.y += height * 0.15f;
 
-	mat4 m_view = mat4(1.0f);
-	m_view[3].x = -player.x;
-	m_view[3].z = -player.z;
-	m_view[3].y = -texture(height_map, -m_view[3].xz * 0.5f + 0.5f).a * 0.15f - 0.038f; 
+	mat4 m_model = model;
+	m_model[3].x -= player.x;
+	m_model[3].z -= player.z;
+	m_model[3].y -= texture(height_map, vec2(player.x, player.z) * 0.5f + 0.5f).a * 0.15f + 0.038f;
 
-	gl_Position = proj * view * m_view * model * pos;
+	gl_Position = proj * view * m_model * pos;
 }

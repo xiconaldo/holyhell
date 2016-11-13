@@ -43,17 +43,15 @@ void Player::draw(){
 	int factor = 1.0f;
 
 	if(Input::instance().getStateKey(GLFW_KEY_LEFT_SHIFT))
-		factor = 4.0f;
-
-	// if(Input::instance().getStateKey(GLFW_KEY_W))
-	// 	localTranslate(0.0f, 0.0f, 0.05f * factor);
-	// if(Input::instance().getStateKey(GLFW_KEY_S))
-	// 	localTranslate(0.0f, 0.0f, -0.05f * factor);
+		factor = 2.0f;
 	
 	if(Input::instance().getStateKey(GLFW_KEY_W))
-		localTranslate(0.0f, 0.0f, 0.05f * factor);
+		localTranslate(0.1f * factor, 0.0f, 0.0f);
 	if(Input::instance().getStateKey(GLFW_KEY_S))
-	 	localTranslate(0.0f, 0.0f, -0.05f * factor);
+	 	localTranslate(-0.1f * factor, 0.0f, 0.0f);
+
+	if(Input::instance().moveMouseX())
+		localRotate(0, 1, 0, -0.01f * Input::instance().moveMouseX());
 
 	const float position[] = {m_model[3].x, m_model[3].z};
 
@@ -63,6 +61,6 @@ void Player::draw(){
 
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
 
-	Object::draw();
+	//Object::draw();
 
 }

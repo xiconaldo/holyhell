@@ -284,6 +284,11 @@ int main(int argc, const char* argv[]){
 		c->bindProgram(grass_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
+
+
+		static bool grassOK = true;
+		if(Input::instance().isJustPressedKey(GLFW_KEY_G)) grassOK = !grassOK;
+		if(grassOK)
 		grass->draw();
 
 		glUseProgram(height_program);
@@ -296,6 +301,7 @@ int main(int argc, const char* argv[]){
 
 		Input::instance().resetMouse();
 		Input::instance().resetJoyAxes();
+		Input::instance().updateKeys();
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();

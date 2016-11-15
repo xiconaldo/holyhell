@@ -39,6 +39,13 @@ void Input::updateKey(int key, int action){
 	}	
 }
 
+void Input::updateKeys(){
+
+	for(int i = 0; i < 350; i++)
+		if(keyboard[i] == GLFW_PRESS)
+			keyboard[i] = GLFW_REPEAT;
+}
+
 bool Input::isJustPressedKey(int key){
 	return keyboard[key] == GLFW_PRESS;
 }

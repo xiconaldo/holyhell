@@ -16,6 +16,7 @@ Camera *c;
 Terrain *t;
 Object *plane;
 Object *tree, *tree2, *tree3, *stark;
+Object **trees;
 Player *me;
 Grass *grass;
 glm::mat4 proj;
@@ -153,27 +154,44 @@ int main(int argc, const char* argv[]){
 	me->scale(0.01f, 0.01f, 0.01f);
 	me->translate(0.1f, 0.0f, 0.0f);
 
-	tree = new Object;
-	tree->loadData("tree.obj", "pine_tree.ktx");
-	tree->bindProgram(height_program);
-	tree->scale(0.015f);
-	tree->scale(3.0f);
 
-	tree2 = new Object;
-	tree2->loadData("tree.obj", "pine_tree.ktx");
-	tree2->bindProgram(height_program);
-	tree2->scale(0.01f, 0.01f, 0.01f);
-	tree2->scale(3.0f);
-	tree2->translate(0.1f, 0.0f, 0.1f);
+	trees = new Object* [400];
+	int seed = 713;
+	float posx = -1.0f, posz = -1.0f;
+	trees[0] = new Object;
+	trees[0]->loadData("tree.obj", "pine_tree.ktx");
+	trees[0]->bindProgram(height_program);
+	trees[0]->scale(0.015f);
+	trees[0]->scale(3.0f);
+	for(int i = 1; i < 400; i++){
+		trees[i] = new Object(*trees[0]);
+		seed = (seed * 3 + i)%1024; //4096; 
+		posx = ((seed >> 5) - 16)/16.0f;
+		posz = (seed % 32 - 16)/16.0f;
+		trees[i]->scale(1.0f, 1.0f + 0.1f * (i%6), 1.0f);
+		trees[i]->translate(posx, 0.0f, posz);
+	}
 
-	tree3 = new Object;
-	tree3->loadData("tree.obj", "pine_tree.ktx");
-	tree3->bindProgram(height_program);
-	tree3->scale(0.01f, 0.01f, 0.01f);
-	tree3->scale(3.0f);
-	tree3->translate(-0.1f, 0.0f, 0.1f);
+	// tree = new Object;
+	// tree->loadData("tree.obj", "pine_tree.ktx");
+	// tree->bindProgram(height_program);
+	// tree->scale(0.015f);
+	// tree->scale(3.0f);
 
-	//c = new Camera(0, 0.2f, -0.1f, me->x(), me->y(), 0.2f);
+	// tree2 = new Object;
+	// tree2->loadData("tree.obj", "pine_tree.ktx");
+	// tree2->bindProgram(height_program);
+	// tree2->scale(0.01f, 0.01f, 0.01f);
+	// tree2->scale(3.0f);
+	// tree2->translate(0.1f, 0.0f, 0.1f);
+
+	// tree3 = new Object;
+	// tree3->loadData("tree.obj", "pine_tree.ktx");
+	// tree3->bindProgram(height_program);
+	// tree3->scale(0.01f, 0.01f, 0.01f);
+	// tree3->scale(3.0f);
+	// tree3->translate(-0.1f, 0.0f, 0.1f);
+
 	c = new Camera(0, 0, 0, me->x(), 0.0f, me->z());
 	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);	
 
@@ -193,18 +211,6 @@ int main(int argc, const char* argv[]){
 
 	while (!glfwWindowShouldClose(window))
 	{
-
-		// if (Input::instance().getStateKey(GLFW_KEY_A))
-		// 	c->rotate(0, 0, 1, 0.01);
-
-		// if (Input::instance().getStateKey(GLFW_KEY_D))
-		// 	c->rotate(0, 0, 1, -0.01);
-
-		// if (Input::instance().getStateKey(GLFW_KEY_W))
-		// 	c->translate(0, 0, -0.01f);
-
-		// if (Input::instance().getStateKey(GLFW_KEY_S))
-		// 	c->translate(0, 0, 0.01f);
 
 		static float vertical_angle = 0.0f;
 
@@ -244,23 +250,6 @@ int main(int argc, const char* argv[]){
 				}
 			}
 
-
-
-			//c->rotate(0, 1, 0, -0.01f * Input::instance().moveJoyAxis2X()*7);
-			//c->rotate(1, 0, 0, -0.01f * Input::instance().moveJoyAxis2Y()*5);
-
-			// if (Input::instance().moveJoyAxis1X() < 0.0f)
-			// 	c->translate(-0.01f, 0, 0);
-
-			// if (Input::instance().moveJoyAxis1X() > 0.0f)
-			// 	c->translate(0.01f, 0, 0);
-
-			// if (Input::instance().moveJoyAxis1Y() < 0.0f)
-			// 	c->translate(0, 0, -0.01f);
-
-			// if (Input::instance().moveJoyAxis1Y() > 0.0f)
-			// 	c->translate(0, 0, 0.01f);
-
 			if(Input::instance().isJustPressedJoyButton(JOY_CIRCLE))
 				glfwSetWindowShouldClose(window, GL_TRUE);
 		}
@@ -294,10 +283,16 @@ int main(int argc, const char* argv[]){
 		glUseProgram(height_program);
 		c->bindProgram(height_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		tree->draw();
-		tree2->draw();
-		tree3->draw();
+		// tree->draw();
+		// tree2->draw();
+		// tree3->draw();
+		for(int i = 0; i < 400; i++){
+			if(trees[i] != NULL)
+				trees[i]->draw();
+		}
 		me->draw();
+
+		//std::cout << me->x() << " " << me->z() << std::endl;
 
 		Input::instance().resetMouse();
 		Input::instance().resetJoyAxes();

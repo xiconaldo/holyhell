@@ -220,3 +220,7 @@ void Camera::bindProgram(GLuint program){
 void Camera::updateViewMatrix(){
 	glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(m_view));
 }
+
+glm::mat4 Camera::getView(){
+	return m_view;
+}

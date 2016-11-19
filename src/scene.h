@@ -75,6 +75,8 @@ public:
 
 	void bindProgram(GLuint program);
 
+	glm::mat4 getView();
+
 private:
 
 	glm::vec3 position;

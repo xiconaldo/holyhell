@@ -13,6 +13,7 @@
 
 CreateProgram create_program;
 Camera *c;
+Camera *light_cam;
 Terrain *t;
 Object *plane;
 Object *tree, *tree2, *tree3, *stark;
@@ -20,6 +21,7 @@ Object **trees;
 Player *me;
 Grass *grass;
 glm::mat4 proj;
+glm::mat4 light_proj;
 glm::vec4 light = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
 glm::mat4 rotP = glm::rotate(0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
 glm::mat4 rotN = glm::rotate(-0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -134,6 +136,15 @@ int main(int argc, const char* argv[]){
 	std::string g_names[] = {"grass_vertex.glsl", "default_frag.glsl"};
 	GLuint grass_program = create_program(2, flags, g_names);
 
+	std::string shadow_h_names[] = {"shadow_height_vertex.glsl", "shadow_frag.glsl"};
+	GLuint shadow_height_program = create_program(2, flags, shadow_h_names);
+
+	std::string shadow_g_names[] = {"shadow_grass_vertex.glsl", "shadow_frag.glsl"};
+	GLuint shadow_grass_program = create_program(2, flags, shadow_g_names);
+
+
+	std::string bosta[] = {"coco_v.glsl", "coco_f.glsl"};	
+	GLuint cocozinho = create_program(2, flags, bosta);
 
 	/////////////
 	// Objects //
@@ -154,7 +165,6 @@ int main(int argc, const char* argv[]){
 	me->scale(0.01f, 0.01f, 0.01f);
 	me->translate(0.1f, 0.0f, 0.0f);
 
-
 	trees = new Object* [400];
 	int seed = 713;
 	float posx = -1.0f, posz = -1.0f;
@@ -169,39 +179,57 @@ int main(int argc, const char* argv[]){
 		posx = ((seed >> 5) - 16)/16.0f;
 		posz = (seed % 32 - 16)/16.0f;
 		trees[i]->scale(1.0f, 1.0f + 0.1f * (i%6), 1.0f);
-		trees[i]->translate(posx, 0.0f, posz);
+		trees[i]->translate(posx, -0.01f, posz);
 	}
 
-	// tree = new Object;
-	// tree->loadData("tree.obj", "pine_tree.ktx");
-	// tree->bindProgram(height_program);
-	// tree->scale(0.015f);
-	// tree->scale(3.0f);
-
-	// tree2 = new Object;
-	// tree2->loadData("tree.obj", "pine_tree.ktx");
-	// tree2->bindProgram(height_program);
-	// tree2->scale(0.01f, 0.01f, 0.01f);
-	// tree2->scale(3.0f);
-	// tree2->translate(0.1f, 0.0f, 0.1f);
-
-	// tree3 = new Object;
-	// tree3->loadData("tree.obj", "pine_tree.ktx");
-	// tree3->bindProgram(height_program);
-	// tree3->scale(0.01f, 0.01f, 0.01f);
-	// tree3->scale(3.0f);
-	// tree3->translate(-0.1f, 0.0f, 0.1f);
-
 	c = new Camera(0, 0, 0, me->x(), 0.0f, me->z());
-	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);	
+	light_cam = c;
+	light_cam = new Camera(1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);
+	proj = glm::perspective(45.0f, 16.0f/9.0f, 0.001f, 1.0f);
+	light_proj = glm::ortho<float>(-1.0f,1.0f,-1.0f,1.0f,0.7f,3.0f);
+	//light_proj = proj;
+	glm::mat4 biasMatrix(
+		0.5, 0.0, 0.0, 0.0,
+		0.0, 0.5, 0.0, 0.0,
+		0.0, 0.0, 0.5, 0.0,
+		0.5, 0.5, 0.5, 1.0);
+
+
+
+	/////////////////////
+	// SHADOW MAP DRAW //
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+	// The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
+	GLuint FramebufferName;
+	glGenFramebuffers(1, &FramebufferName);
+	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+
+	// Depth texture. Slower than a depth buffer, but you can sample it later in your shader
+	GLuint depthTexture;
+	glGenTextures(1, &depthTexture);
+	glBindTexture(GL_TEXTURE_2D, depthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, 1024, 576, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+	glDrawBuffer(GL_NONE); // No color buffer is drawn to.
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+	
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_TEST);
-	glCullFace(GL_BACK);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_DEPTH_TEST);
+	//glCullFace(GL_BACK);
 	//glEnable(GL_CULL_FACE);
-	
+
+
 	///////////////
 	// Main Loop //
 	///////////////
@@ -211,8 +239,14 @@ int main(int argc, const char* argv[]){
 
 	while (!glfwWindowShouldClose(window))
 	{
+		///////////////////
+		// INPUT CONTROL //
+		/////////////////////////////////////////////////////////////////////////////////
 
 		static float vertical_angle = 0.0f;
+
+		static bool grassOK = false;
+		if(Input::instance().isJustPressedKey(GLFW_KEY_G)) grassOK = !grassOK;
 
 		if(Input::instance().moveMouseY()){
 			c->rotate(1, 0, 0, -0.01f * Input::instance().moveMouseY());
@@ -254,45 +288,138 @@ int main(int argc, const char* argv[]){
 				glfwSetWindowShouldClose(window, GL_TRUE);
 		}
 
-
 		lastTime = glfwGetTime();
 
-		const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
-		glClearBufferfv(GL_COLOR, 0, background_color);
+		////////////////////////////////////////////////////////////////////////////////////////////
+		
+
+
+		/////////////////////////
+		// DEPTH BUFFER RENDER //
+		///////////////////////////////////////////////////////////////////////////////////////////
+
+		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		glViewport(0, 0, 1024, 576);
 
 		GLfloat far = 1.0f;
+		//const GLfloat background_color[] = {1.0f, 1.0f, 1.0f, 1.0f};
+		//glClearBufferfv(GL_COLOR, 0, background_color);
+		glClearBufferfv(GL_DEPTH, 0, &far);
+
+		glUseProgram(ter_program);
+		light_cam->bindProgram(ter_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(light_proj));
+		glUniform3fv(3, 1, glm::value_ptr(light));
+		t->draw();
+
+		glUseProgram(shadow_grass_program);
+		light_cam->bindProgram(shadow_grass_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(light_proj));
+
+		 if(grassOK)
+		 	//grass->draw();
+
+		glUseProgram(shadow_height_program);
+		light_cam->bindProgram(shadow_height_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(light_proj));
+		for(int i = 0; i < 400; i++){
+			if(trees[i] != NULL)
+				trees[i]->draw();
+		}
+		me->draw();
+		
+
+		// glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		// glDisable(GL_DEPTH_TEST);
+		// glUseProgram(cocozinho);
+
+		// GLuint myVAO;
+		// glGenVertexArrays(1, &myVAO);
+		// glBindVertexArray(myVAO);
+
+		// GLfloat quad[] = {-1.0f, 1.0f,  -1.0f, -1.0f,  1.0f, -1.0f,
+		// 				  1.0f, 1.0f,  -1.0f,  1.0f,  1.0f, -1.0f};
+
+		// GLfloat tex[] = {0.0f, 1.0f,  0.0f, 0.0f,  1.0f, 0.0f,
+		// 			     1.0f, 1.0f,  0.0f, 1.0f,  1.0f, 0.0f};
+
+		// GLuint drawBuffer[2];
+		// glGenBuffers(2, drawBuffer);
+		// glBindBuffer(GL_ARRAY_BUFFER, drawBuffer[0]);
+		// glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), (void*)quad, GL_STATIC_DRAW);
+		// glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+		// glEnableVertexAttribArray(0);
+
+		// glBindBuffer(GL_ARRAY_BUFFER, drawBuffer[1]);
+		// glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), (void*)tex, GL_STATIC_DRAW);
+		// glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+		// glEnableVertexAttribArray(1);
+
+		
+		// glActiveTexture(GL_TEXTURE2);
+		// glBindTexture(GL_TEXTURE_2D, depthTexture);
+
+		// glClearBufferfv(GL_COLOR, 0, background_color);
+		// glPointSize(10.0f);
+		// glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		////////////////////////////////////////////////////////////////////////////////////
+		
+
+
+
+
+		/////////////////
+		// NORMAL DRAW //
+		////////////////////////////////////////////////////////////////////////////////////
+		
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
+		glEnable(GL_DEPTH_TEST);
+		glClearBufferfv(GL_COLOR, 0, background_color);
 		glClearBufferfv(GL_DEPTH, 0, &far);
 
 		glUseProgram(ter_program);
 		c->bindProgram(ter_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
+		glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
+		glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
+		glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
 		t->draw();
 
 		glUseProgram(grass_program);
 		c->bindProgram(grass_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
+		glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
+		glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
+		glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
 
-
-		static bool grassOK = true;
-		if(Input::instance().isJustPressedKey(GLFW_KEY_G)) grassOK = !grassOK;
 		if(grassOK)
 		grass->draw();
 
 		glUseProgram(height_program);
 		c->bindProgram(height_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		// tree->draw();
-		// tree2->draw();
-		// tree3->draw();
+		glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
+		glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
+		glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
+
 		for(int i = 0; i < 400; i++){
 			if(trees[i] != NULL)
 				trees[i]->draw();
 		}
-		me->draw();
+		//me->draw();
 
-		//std::cout << me->x() << " " << me->z() << std::endl;
+		///////////////////////////////////////////////////////////////////////////////////
+		
+
+		///////////
+		// EXTRA //
+		///////////
 
 		Input::instance().resetMouse();
 		Input::instance().resetJoyAxes();

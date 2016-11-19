@@ -84,6 +84,6 @@ void Player::draw(){
 
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
 
-	//Object::draw();
+	Object::draw();
 
 }

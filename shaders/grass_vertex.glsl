@@ -7,6 +7,8 @@ layout (location = 2) in vec2 uv;
 layout (location = 0) uniform mat4 model = mat4(1.0f);
 layout (location = 1) uniform mat4 view  = mat4(1.0f);
 layout (location = 2) uniform mat4 proj  = mat4(1.0f);
+layout (location = 3) uniform vec3 light = vec3(-1.0f, -1.0f, -1.0f);
+layout (location = 4) uniform mat4 rev_model = mat4(1.0f);
 
 layout (std140, binding = 0) uniform Player{
 	float x;
@@ -15,7 +17,8 @@ layout (std140, binding = 0) uniform Player{
 
 layout (binding  = 5) uniform sampler2D height_map;
 
-out vec3 norm_coord;
+//out vec3 norm_coord;
+out float intensity;
 out vec2 text_coord;
 
 mat4 grass_translation(void){
@@ -65,6 +68,8 @@ mat4 grass_scale(){
 
 void main(){
 
+	vec4 pos = vec4(vertex, 1.0f);
+
 	mat4 trans = grass_translation();
 	mat4 rot = grass_rotation();
 	mat4 scale = grass_scale();
@@ -75,7 +80,11 @@ void main(){
 	m_model[3].z -= player.z;
 	m_model[3].y -= texture(height_map, vec2(player.x, player.z) * 0.5f + 0.5f).a * 0.15f + 0.038f;
 
-	gl_Position = proj * view * m_model * vec4(vertex, 1.0f);
-	norm_coord = normal;
+	vec3 local_light = normalize(light);
+	vec3 norm_coord = normal;
+	intensity = -dot(norm_coord, local_light);
+	if(intensity < 0.2) intensity = 0.2;
+
+	gl_Position = proj * view * m_model * pos;
 	text_coord = uv;
 }

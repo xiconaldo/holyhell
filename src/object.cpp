@@ -43,6 +43,7 @@ void Object::loadData(const std::string& object_name, const std::string& text_na
  */
 void Object::localRotate(int xc, int yc, int zc, float degrees){
 	m_model = m_model * glm::rotate(degrees, glm::vec3(xc, yc, zc));
+	reverse_model = reverse_model * glm::transpose(glm::rotate(degrees, glm::vec3(-xc, -yc, -zc)));
 	updateModelMatrix();
 }
 
@@ -67,6 +68,7 @@ void Object::localTranslate(float x, float y, float z){
  */
 void Object::localScale(float x, float y, float z){
 	m_model = m_model * glm::scale(glm::vec3(x, y, z));
+	reverse_model = reverse_model * glm::scale(glm::vec3(1/x, 1/y, 1/z));
 	updateModelMatrix();
 }
 
@@ -77,6 +79,7 @@ void Object::localScale(float xyz){
 
 void Object::rotate(int xc, int yc, int zc, float degrees){
 	m_model = glm::rotate(degrees, glm::vec3(xc, yc, zc)) * m_model;
+	reverse_model = glm::transpose(glm::rotate(degrees, glm::vec3(-xc, -yc, -zc))) * reverse_model;
 	updateModelMatrix();
 }
 
@@ -87,11 +90,13 @@ void Object::translate(float x, float y, float z){
 
 void Object::scale(float x, float y, float z){
 	m_model = glm::scale(glm::vec3(x, y, z)) * m_model;
+	reverse_model = glm::scale(glm::vec3(1/x, 1/y, 1/z)) * reverse_model;
 	updateModelMatrix();
 }
 
 void Object::scale(float xyz){
 	m_model = glm::scale(glm::vec3(xyz)) * m_model;
+	reverse_model = glm::scale(glm::vec3(1/xyz, 1/xyz, 1/xyz)) * reverse_model;
 	updateModelMatrix();
 }
 
@@ -118,6 +123,7 @@ void Object::bindProgram(GLuint program){
 	normal_location = glGetAttribLocation(program, "normal");
 	uv_location 	= glGetAttribLocation(program, "uv");
 	model_location = glGetUniformLocation(program, "model");
+	rev_model_location =  glGetUniformLocation(program, "rev_model");
 
 	glVertexAttribPointer(vertex_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertices));
 	glEnableVertexAttribArray(vertex_location);
@@ -137,6 +143,7 @@ void Object::bindProgram(GLuint program){
  */
 void Object::updateModelMatrix(){
 	glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(m_model));
+	glUniformMatrix4fv(rev_model_location, 1, GL_FALSE, glm::value_ptr(reverse_model));
 }
 
 /**
@@ -146,6 +153,7 @@ void Object::updateModelMatrix(){
  */
 void Object::resetMatrix(){
 	m_model = glm::mat4(1.0f);
+	reverse_model = glm::mat4(1.0f);
 }
 
 /**
@@ -158,6 +166,7 @@ void Object::draw(){
 
 	glBindVertexArray(vao);
 	glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(m_model));
+	glUniformMatrix4fv(rev_model_location, 1, GL_FALSE, glm::value_ptr(reverse_model));
 
 	glDrawArrays(GL_TRIANGLES, 0, 3*triangle_count);
 }

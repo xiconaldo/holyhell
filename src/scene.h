@@ -123,11 +123,13 @@ protected:
 	std::vector<Vertex> data;
 
 	glm::mat4 m_model = glm::mat4(1.0f);
+	glm::mat4 reverse_model = glm::mat4(1.0f);
 
 	GLuint model_location;
 	GLuint vertex_location;
 	GLuint normal_location;
 	GLuint uv_location;
+	GLuint rev_model_location;
 
 	GLuint vertex_buffer;
 	GLuint vao;
@@ -167,6 +169,5 @@ public:
 	void loadData(const std::string& object_name, const std::string& text_name = "");
 	void draw();
 };
-
 
 #endif

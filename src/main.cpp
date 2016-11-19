@@ -20,6 +20,7 @@ Player *me;
 Grass *grass;
 glm::mat4 proj;
 glm::vec4 light = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
+//glm::vec4 light = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
 glm::mat4 rotP = glm::rotate(0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
 glm::mat4 rotN = glm::rotate(-0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
 
@@ -274,30 +275,38 @@ int main(int argc, const char* argv[]){
 		GLfloat far = 1.0f;
 		glClearBufferfv(GL_DEPTH, 0, &far);
 
-		glUseProgram(ter_program);
-		c->bindProgram(ter_program);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		glUniform3fv(3, 1, glm::value_ptr(light));
-		t->draw();
 
-		glUseProgram(grass_program);
-		c->bindProgram(grass_program);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		glUniform3fv(3, 1, glm::value_ptr(light));
+		static bool terrainOK = false;
+		if(Input::instance().isJustPressedKey(GLFW_KEY_T)) terrainOK = !terrainOK;
+		if(terrainOK){
+			glUseProgram(ter_program);
+			c->bindProgram(ter_program);
+			glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+			glUniform3fv(3, 1, glm::value_ptr(light));
+			t->draw();
+		}
 
-
-		static bool grassOK = true;
+		static bool grassOK = false;
 		if(Input::instance().isJustPressedKey(GLFW_KEY_G)) grassOK = !grassOK;
-		if(grassOK)
-		grass->draw();
+		if(grassOK){
+			glUseProgram(grass_program);
+			c->bindProgram(grass_program);
+			glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+			glUniform3fv(3, 1, glm::value_ptr(light));
+			grass->draw();
+		}
 
-		glUseProgram(height_program);
-		c->bindProgram(height_program);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		tree->draw();
-		tree2->draw();
-		tree3->draw();
-		me->draw();
+		static bool objectOK = false;
+		if(Input::instance().isJustPressedKey(GLFW_KEY_O)) objectOK = !objectOK;
+		if(objectOK){
+			glUseProgram(height_program);
+			c->bindProgram(height_program);
+			glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+			tree->draw();
+			tree2->draw();
+			tree3->draw();
+			me->draw();
+		}	
 
 		Input::instance().resetMouse();
 		Input::instance().resetJoyAxes();

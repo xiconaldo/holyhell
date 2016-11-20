@@ -6,10 +6,6 @@ layout (location = 0) uniform mat4 model = mat4(1.0f);
 layout (location = 1) uniform mat4 view  = mat4(1.0f);
 layout (location = 2) uniform mat4 proj  = mat4(1.0f);
 
-layout (location = 8) uniform mat4 shadow_view  = mat4(1.0f);
-layout (location = 9) uniform mat4 shadow_proj  = mat4(1.0f);
-layout (location = 10) uniform mat4 shadow_bias  = mat4(1.0f);
-
 layout (std140, binding = 0) uniform Player{
 	float x;
 	float z;
@@ -33,14 +29,9 @@ void main(){
 	mat4 m_model = model;
 	m_model[3].y += height * 0.15f;
 
-	// Same, but with the light's view matrix
-	shadow_coord = shadow_proj * shadow_view * m_model * pos;
-	shadow_coord /= shadow_coord.w;
-	shadow_coord = shadow_bias * shadow_coord;
-
-	m_model[3].x -= player.x;
-	m_model[3].z -= player.z;
-	m_model[3].y -= texture(height_map, vec2(player.x, player.z) * 0.5f + 0.5f).a * 0.15f + 0.038f;
+	// m_model[3].x -= player.x;
+	// m_model[3].z -= player.z;
+	// m_model[3].y -= texture(height_map, vec2(player.x, player.z) * 0.5f + 0.5f).a * 0.15f + 0.038f;
 
 	gl_Position = proj * view * m_model * pos;
 }

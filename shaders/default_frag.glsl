@@ -11,15 +11,17 @@ out vec4 color;
 
 vec3 local_light;
 float intensity = 1.0f;
-float bias = 0.005;
+float bias = 0.005f;
 
 void main(){
 	local_light = normalize(light);
 	intensity = -dot(norm_coord, local_light);
-	if(intensity < 0.2) intensity = 0.2;
+	if(intensity < 0.4) intensity = 0.4;
 
-	if ( texture(shadow_map, shadow_coord.xy).r  <  shadow_coord.r - bias){
-	   intensity = 0.2f;
+	intensity = 1.0f; // NEW
+
+	if ( texture(shadow_map, shadow_coord.xy).r  <  shadow_coord.z){
+	   intensity = 0.4f;
 	}
 
 	vec4 text_color = texture(base_texture, text_coord);

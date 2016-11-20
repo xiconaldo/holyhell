@@ -25,6 +25,7 @@ glm::mat4 light_proj;
 glm::vec4 light = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
 glm::mat4 rotP = glm::rotate(0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
 glm::mat4 rotN = glm::rotate(-0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
+int numArvores = 100;
 
 void initDirectories(const char *location){
 	std::string SHADERS;
@@ -142,6 +143,9 @@ int main(int argc, const char* argv[]){
 	std::string shadow_g_names[] = {"shadow_grass_vertex.glsl", "shadow_frag.glsl"};
 	GLuint shadow_grass_program = create_program(2, flags, shadow_g_names);
 
+	std::string shadow_ter_names[] = {"terrain_vertex.glsl", "terrain_tess_ct.glsl", "shadow_terrain_tess_ev.glsl", "shadow_frag.glsl"};
+	GLuint shadow_ter_program = create_program(4, ter_flags, shadow_ter_names);
+
 
 	std::string bosta[] = {"coco_v.glsl", "coco_f.glsl"};	
 	GLuint cocozinho = create_program(2, flags, bosta);
@@ -173,7 +177,7 @@ int main(int argc, const char* argv[]){
 	trees[0]->bindProgram(height_program);
 	trees[0]->scale(0.015f);
 	trees[0]->scale(3.0f);
-	for(int i = 1; i < 400; i++){
+	for(int i = 1; i < numArvores; i++){
 		trees[i] = new Object(*trees[0]);
 		seed = (seed * 3 + i)%1024; //4096; 
 		posx = ((seed >> 5) - 16)/16.0f;
@@ -186,8 +190,8 @@ int main(int argc, const char* argv[]){
 	light_cam = c;
 	light_cam = new Camera(1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
 	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);
-	proj = glm::perspective(45.0f, 16.0f/9.0f, 0.001f, 1.0f);
-	light_proj = glm::ortho<float>(-1.0f,1.0f,-1.0f,1.0f,0.7f,3.0f);
+	proj = glm::perspective(45.0f, 16.0f/9.0f, 0.001f, 1.5f);
+	light_proj = glm::ortho(-1.4f,1.4f,-0.9f,1.1f,0.7f,3.0f);
 	//light_proj = proj;
 	glm::mat4 biasMatrix(
 		0.5, 0.0, 0.0, 0.0,
@@ -301,15 +305,12 @@ int main(int argc, const char* argv[]){
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
-		glViewport(0, 0, 1024, 576);
 
 		GLfloat far = 1.0f;
-		//const GLfloat background_color[] = {1.0f, 1.0f, 1.0f, 1.0f};
-		//glClearBufferfv(GL_COLOR, 0, background_color);
 		glClearBufferfv(GL_DEPTH, 0, &far);
 
-		glUseProgram(ter_program);
-		light_cam->bindProgram(ter_program);
+		glUseProgram(shadow_ter_program);
+		light_cam->bindProgram(shadow_ter_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(light_proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
 		t->draw();
@@ -317,57 +318,53 @@ int main(int argc, const char* argv[]){
 		glUseProgram(shadow_grass_program);
 		light_cam->bindProgram(shadow_grass_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(light_proj));
-
-		 if(grassOK)
-		 	//grass->draw();
+		// grass->draw();
 
 		glUseProgram(shadow_height_program);
 		light_cam->bindProgram(shadow_height_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(light_proj));
-		for(int i = 0; i < 400; i++){
+		for(int i = 0; i < numArvores; i++){
 			if(trees[i] != NULL)
 				trees[i]->draw();
 		}
-		me->draw();
+		//me->draw();
 		
 
-		// glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		// glDisable(GL_DEPTH_TEST);
-		// glUseProgram(cocozinho);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDisable(GL_DEPTH_TEST);
+		glUseProgram(cocozinho);
 
-		// GLuint myVAO;
-		// glGenVertexArrays(1, &myVAO);
-		// glBindVertexArray(myVAO);
+		GLuint myVAO;
+		glGenVertexArrays(1, &myVAO);
+		glBindVertexArray(myVAO);
 
-		// GLfloat quad[] = {-1.0f, 1.0f,  -1.0f, -1.0f,  1.0f, -1.0f,
-		// 				  1.0f, 1.0f,  -1.0f,  1.0f,  1.0f, -1.0f};
+		GLfloat quad[] = {-1.0f, 1.0f,  -1.0f, -1.0f,  1.0f, -1.0f,
+						  1.0f, 1.0f,  -1.0f,  1.0f,  1.0f, -1.0f};
 
-		// GLfloat tex[] = {0.0f, 1.0f,  0.0f, 0.0f,  1.0f, 0.0f,
-		// 			     1.0f, 1.0f,  0.0f, 1.0f,  1.0f, 0.0f};
+		GLfloat tex[] = {0.0f, 1.0f,  0.0f, 0.0f,  1.0f, 0.0f,
+					     1.0f, 1.0f,  0.0f, 1.0f,  1.0f, 0.0f};
 
-		// GLuint drawBuffer[2];
-		// glGenBuffers(2, drawBuffer);
-		// glBindBuffer(GL_ARRAY_BUFFER, drawBuffer[0]);
-		// glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), (void*)quad, GL_STATIC_DRAW);
-		// glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-		// glEnableVertexAttribArray(0);
+		GLuint drawBuffer[2];
+		glGenBuffers(2, drawBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, drawBuffer[0]);
+		glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), (void*)quad, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+		glEnableVertexAttribArray(0);
 
-		// glBindBuffer(GL_ARRAY_BUFFER, drawBuffer[1]);
-		// glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), (void*)tex, GL_STATIC_DRAW);
-		// glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-		// glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, drawBuffer[1]);
+		glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), (void*)tex, GL_STATIC_DRAW);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+		glEnableVertexAttribArray(1);
 
 		
-		// glActiveTexture(GL_TEXTURE2);
-		// glBindTexture(GL_TEXTURE_2D, depthTexture);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, depthTexture);
 
-		// glClearBufferfv(GL_COLOR, 0, background_color);
-		// glPointSize(10.0f);
-		// glDrawArrays(GL_TRIANGLES, 0, 6);
+		const GLfloat background_color[] = {1.0f, 1.0f, 1.0f, 1.0f};
+		glClearBufferfv(GL_COLOR, 0, background_color);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		////////////////////////////////////////////////////////////////////////////////////
-		
-
 
 
 
@@ -375,44 +372,44 @@ int main(int argc, const char* argv[]){
 		// NORMAL DRAW //
 		////////////////////////////////////////////////////////////////////////////////////
 		
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
-		glEnable(GL_DEPTH_TEST);
-		glClearBufferfv(GL_COLOR, 0, background_color);
-		glClearBufferfv(GL_DEPTH, 0, &far);
+		// glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		// const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
+		// glEnable(GL_DEPTH_TEST);
+		// glClearBufferfv(GL_COLOR, 0, background_color);
+		// glClearBufferfv(GL_DEPTH, 0, &far);
 
-		glUseProgram(ter_program);
-		c->bindProgram(ter_program);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		glUniform3fv(3, 1, glm::value_ptr(light));
-		glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
-		glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
-		glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
-		t->draw();
+		// glUseProgram(ter_program);
+		// c->bindProgram(ter_program);
+		// glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		// glUniform3fv(3, 1, glm::value_ptr(light));
+		// glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
+		// glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
+		// glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
+		// t->draw();
 
-		glUseProgram(grass_program);
-		c->bindProgram(grass_program);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		glUniform3fv(3, 1, glm::value_ptr(light));
-		glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
-		glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
-		glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
+		// glUseProgram(grass_program);
+		// c->bindProgram(grass_program);
+		// glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		// glUniform3fv(3, 1, glm::value_ptr(light));
+		// glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
+		// glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
+		// glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
 
-		if(grassOK)
-		grass->draw();
+		// if(grassOK)
+		// grass->draw();
 
-		glUseProgram(height_program);
-		c->bindProgram(height_program);
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
-		glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
-		glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
+		// glUseProgram(height_program);
+		// c->bindProgram(height_program);
+		// glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		// glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
+		// glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
+		// glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
 
-		for(int i = 0; i < 400; i++){
-			if(trees[i] != NULL)
-				trees[i]->draw();
-		}
-		//me->draw();
+		// for(int i = 0; i < numArvores; i++){
+		// 	if(trees[i] != NULL)
+		// 		trees[i]->draw();
+		// }
+		// me->draw();
 
 		///////////////////////////////////////////////////////////////////////////////////
 		

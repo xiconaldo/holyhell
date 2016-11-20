@@ -66,9 +66,9 @@ void main(){
 	
 	mat4 m_model = trans * rot * scale * model;
 
-	m_model[3].x += player.x;
-	m_model[3].z += player.z;
-	m_model[3].y += texture(height_map, vec2(player.x, player.z) * 0.5f + 0.5f).a * 0.15f + 0.038f;
+	// m_model[3].x += player.x;
+	// m_model[3].z += player.z;
+	// m_model[3].y += texture(height_map, vec2(player.x, player.z) * 0.5f + 0.5f).a * 0.15f + 0.038f;
 
 	gl_Position = proj * view * m_model * vec4(vertex, 1.0f);
 }

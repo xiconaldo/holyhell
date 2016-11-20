@@ -29,16 +29,16 @@ void main(){
 	mat4 m_model = model;
 	m_model[3].y += texture(height_map, model[3].xz * 0.5f + 0.5f).a * 0.15f;
 	
+	// Same, but with the light's view matrix
+	shadow_coord = shadow_proj * shadow_view * m_model * pos;
+	shadow_coord /= shadow_coord.w;
+	shadow_coord = shadow_bias * shadow_coord;
+
 	m_model[3].x -= player.x;
 	m_model[3].z -= player.z;
 	m_model[3].y -= texture(height_map, vec2(player.x, player.z) * 0.5f + 0.5f).a * 0.15f + 0.038f;
 
 	gl_Position = proj * view * m_model * pos;
-
-	// Same, but with the light's view matrix
-	shadow_coord = shadow_proj * shadow_view * m_model * pos;
-	shadow_coord /= shadow_coord.w;
-	shadow_coord = shadow_bias * shadow_coord;
 
 	norm_coord = normal;
 	text_coord = uv;

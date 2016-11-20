@@ -256,8 +256,9 @@ int main(int argc, const char* argv[]){
 
 
 		lastTime = glfwGetTime();
-
-		const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
+		float bw = (0.5294f + 0.8078f + 0.9804f)/3.0f;
+		//const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
+		const GLfloat background_color[] = {bw, bw, bw, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
 
 		GLfloat far = 1.0f;

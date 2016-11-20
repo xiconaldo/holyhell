@@ -22,7 +22,7 @@ void main(){
 	vec4 pos = vec4(vertex, 1.0f);
 
 	mat4 m_model = model;
-	m_model[3].y += texture(height_map, model[3].xz * 0.5f + 0.5f).a * 0.15f;
+	m_model[3].y += texture(height_map, model[3].xz * 0.5f + 0.5f).a * 0.15f - 0.01;
 	
 	m_model[3].x -= player.x;
 	m_model[3].z -= player.z;

@@ -19,4 +19,7 @@ void main(){
 
 	vec4 text_color = texture(base_texture, text_coord*50.0f);
 	color = vec4(text_color.xyz * pow(intensity, 2), text_color.a);
+
+	float wow = (color.r + color.g + color.b)*0.333f;
+	color = vec4(wow, wow, wow, text_color.a);
 }

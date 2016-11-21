@@ -100,7 +100,7 @@ int main(int argc, const char* argv[]){
 	//GLFWwindow* window = glfwCreateWindow(1024, 768, "Projeto de Computação Gráfica", NULL, NULL);
 	//GLFWwindow* window = glfwCreateWindow(1366, 768, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
 	
-	GLFWwindow* window = glfwCreateWindow(1024, 576, "Projeto de Computação Gráfica", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(1024, 576, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
 	
 	if (!window){
 		glfwTerminate();
@@ -343,8 +343,13 @@ int main(int argc, const char* argv[]){
 			}
 		}
 
-		if(tombCount) slender->draw(me->x(), me->z(), factor, &enemyDist);
-		else enemyDist = 2.0f;
+		if(tombCount){
+			glUniform1f(4, 0.0f);
+			slender->draw(me->x(), me->z(), factor, &enemyDist);
+		}
+		else{
+			enemyDist = 2.0f;
+		}
 
 		if(enemyDist <= 0.001f) glfwSetWindowShouldClose(window, GL_TRUE);
 
@@ -352,6 +357,7 @@ int main(int argc, const char* argv[]){
 		Input::instance().resetJoyAxes();
 		Input::instance().updateKeys();
 		
+		//glfwSwapInterval(1);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 

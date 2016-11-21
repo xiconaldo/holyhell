@@ -15,18 +15,21 @@ CreateProgram create_program;
 Camera *c;
 Terrain *t;
 Object *plane;
-Object *tree, *tree2, *tree3, *stark;
 Object **trees;
 Player *me;
 Grass *grass;
 Enemy *slender;
 Object **tomb;
 
+glm::vec3 tombPos[9];
+
 glm::mat4 proj;
 glm::vec4 light = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
 glm::mat4 rotP = glm::rotate(0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
 glm::mat4 rotN = glm::rotate(-0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
 float enemyDist = 2.0f;
+float factor = 0.2f;
+int tombCount = 8;
 
 void initDirectories(const char *location){
 	std::string SHADERS;
@@ -176,12 +179,12 @@ int main(int argc, const char* argv[]){
 		trees[i]->translate(posx, 0.0f, posz);
 	}
 
-	tomb = new Object* [6];
+	tomb = new Object* [tombCount+1];
 	tomb[0] = new Object;
 	tomb[0]->loadData("tombstone.obj", "tombstone.ktx");
 	tomb[0]->bindProgram(height_program);
 	tomb[0]->scale(0.03f);
-	for(int i = 1; i < 5; i++){
+	for(int i = 1; i < tombCount+1; i++){
 		tomb[i] = new Object(*tomb[0]);
 		seed = (seed * 3 + i)%1024; //4096; 
 		posx = ((seed >> 5) - 16)/16.0f;
@@ -189,6 +192,7 @@ int main(int argc, const char* argv[]){
 		tomb[i]->scale(1.0f, 1.0f + 0.1f * (i%6), 1.0f);
 		tomb[i]->rotate(0, 1, 0, seed%90);
 		tomb[i]->translate(posx, 0.0f, posz);
+		tombPos[i-1] = glm::vec3(posx, posz, 1.0f);
 	}
 
 	//tomb->translate(0.1f, 0.01f, -0.1f);
@@ -236,6 +240,19 @@ int main(int argc, const char* argv[]){
 			}
 		}
 
+		if(Input::instance().isJustPressedKey(GLFW_KEY_X)){
+			for(int i = 0; i < tombCount; i++){
+				if(tombPos[i].z > 0.0f){
+					if(glm::distance(glm::vec2(tombPos[i].x, tombPos[i].y), glm::vec2(me->x(), me->z())) < 0.05f){
+						tombPos[i].z = -1.0f;
+						factor *= 1.5f;
+						tombCount--;
+						break;
+					}	
+				}
+			}
+		}
+
 		if(glfwJoystickPresent(GLFW_JOYSTICK_1)){
 
 			Input::instance().updateJoyButton();
@@ -259,6 +276,19 @@ int main(int argc, const char* argv[]){
 
 			if(Input::instance().isJustPressedJoyButton(JOY_CIRCLE))
 				glfwSetWindowShouldClose(window, GL_TRUE);
+
+			if(Input::instance().isJustPressedJoyButton(JOY_CROSS)){
+				for(int i = 0; i < tombCount; i++){
+					if(tombPos[i].z > 0.0f){
+						if(glm::distance(glm::vec2(tombPos[i].x, tombPos[i].y), glm::vec2(me->x(), me->z())) < 0.05f){
+							tombPos[i].z = -1.0f;
+							factor *= 1.5f;
+							tombCount--;
+							break;
+						}	
+					}
+				}
+			}			
 		}
 
 
@@ -307,12 +337,14 @@ int main(int argc, const char* argv[]){
 		}
 		me->draw();
 
-		for(int i = 1; i < 5; i++){
-			if(tomb[i] != NULL)
+		for(int i = 1; i < 9; i++){
+			if(tomb[i] != NULL && tombPos[i-1].z > 0.0f){
 				tomb[i]->draw();
+			}
 		}
 
-		slender->draw(me->x(), me->z(), 0.2f, &enemyDist);
+		if(tombCount) slender->draw(me->x(), me->z(), factor, &enemyDist);
+		else enemyDist = 2.0f;
 
 		if(enemyDist <= 0.001f) glfwSetWindowShouldClose(window, GL_TRUE);
 

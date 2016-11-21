@@ -322,9 +322,9 @@ int main(int argc, const char* argv[]){
 
 		glDisable(GL_DEPTH_TEST);
 		if(enemyDist <= 0.001f){
-			glUseProgram(hud_program);
-			loser->draw();
-			//glfwSetWindowShouldClose(window, GL_TRUE);
+			// glUseProgram(hud_program);
+			// loser->draw();
+			glfwSetWindowShouldClose(window, GL_TRUE);
 		}
 		glEnable(GL_DEPTH_TEST);
 

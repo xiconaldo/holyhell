@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <loader.h>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/vector_angle.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #define  KTX_OPENGL 1
 #include <ktx.h>

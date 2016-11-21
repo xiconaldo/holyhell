@@ -30,16 +30,25 @@ void Enemy::loadData(const std::string& object_name, const std::string& text_nam
  */
 Enemy::Enemy(){}
 
-void Enemy::draw(float x, float z, float factor, float *dist){
+void Enemy::draw(float x, float z, float speed, float *dist){
 	
-	factor *= 0.002f;
-	glm::vec2 dir(m_model[3].x - x, m_model[3].z - z);
+	glm::vec2 dir(this->x() - x,this->z() - z);
 	*dist = glm::length(dir);
 	if(*dist > 0.001f){
-		dir = glm::normalize(dir) * factor;
-		m_model[3].x -= dir.x;
-		m_model[3].z -= dir.y;
+		dir = glm::normalize(dir);
+		float angle = glm::orientedAngle(dir, glm::normalize(-glm::vec2(m_model[2].x, m_model[2].z)));
+
+		localRotate(0, 1, 0, angle);
+		localTranslate(0, 0, speed*0.15);
 	}
+
+	// static int oc = 0;
+
+	// if(oc++ % 240){}
+	// else{
+	// 	std::cout << "PLAYER: " << x << ", " << z << std::endl;
+	// 	std::cout << "ENEMY : " << this->x() << ", " << this->z() << std::endl;
+	// }
 	
 	Object::draw();
 

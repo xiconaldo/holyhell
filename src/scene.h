@@ -168,4 +168,13 @@ public:
 	void draw();
 };
 
+// Enemy
+class Enemy : public Object{
+public:
+	Enemy();
+	void loadData(const std::string& object_name, const std::string& text_name = "");
+	void draw(float x, float y, float factor, float* dist);
+};
+
+
 #endif

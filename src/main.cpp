@@ -19,10 +19,14 @@ Object *tree, *tree2, *tree3, *stark;
 Object **trees;
 Player *me;
 Grass *grass;
+Enemy *slender;
+Object **tomb;
+
 glm::mat4 proj;
 glm::vec4 light = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
 glm::mat4 rotP = glm::rotate(0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
 glm::mat4 rotN = glm::rotate(-0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
+float enemyDist = 2.0f;
 
 void initDirectories(const char *location){
 	std::string SHADERS;
@@ -162,35 +166,38 @@ int main(int argc, const char* argv[]){
 	trees[0]->loadData("tree.obj", "pine_tree.ktx");
 	trees[0]->bindProgram(height_program);
 	trees[0]->scale(0.015f);
-	trees[0]->scale(3.0f);
+	trees[0]->scale(5.0f); // 3.0f
 	for(int i = 1; i < 400; i++){
 		trees[i] = new Object(*trees[0]);
-		seed = (seed * 3 + i)%1024; //4096; 
+		seed = (seed * 33 + 13)%1024; //4096; 
 		posx = ((seed >> 5) - 16)/16.0f;
 		posz = (seed % 32 - 16)/16.0f;
 		trees[i]->scale(1.0f, 1.0f + 0.1f * (i%6), 1.0f);
 		trees[i]->translate(posx, 0.0f, posz);
 	}
 
-	// tree = new Object;
-	// tree->loadData("tree.obj", "pine_tree.ktx");
-	// tree->bindProgram(height_program);
-	// tree->scale(0.015f);
-	// tree->scale(3.0f);
+	tomb = new Object* [6];
+	tomb[0] = new Object;
+	tomb[0]->loadData("tombstone.obj", "tombstone.ktx");
+	tomb[0]->bindProgram(height_program);
+	tomb[0]->scale(0.03f);
+	for(int i = 1; i < 5; i++){
+		tomb[i] = new Object(*tomb[0]);
+		seed = (seed * 3 + i)%1024; //4096; 
+		posx = ((seed >> 5) - 16)/16.0f;
+		posz = (seed % 32 - 16)/16.0f;
+		tomb[i]->scale(1.0f, 1.0f + 0.1f * (i%6), 1.0f);
+		tomb[i]->rotate(0, 1, 0, seed%90);
+		tomb[i]->translate(posx, 0.0f, posz);
+	}
 
-	// tree2 = new Object;
-	// tree2->loadData("tree.obj", "pine_tree.ktx");
-	// tree2->bindProgram(height_program);
-	// tree2->scale(0.01f, 0.01f, 0.01f);
-	// tree2->scale(3.0f);
-	// tree2->translate(0.1f, 0.0f, 0.1f);
+	//tomb->translate(0.1f, 0.01f, -0.1f);
 
-	// tree3 = new Object;
-	// tree3->loadData("tree.obj", "pine_tree.ktx");
-	// tree3->bindProgram(height_program);
-	// tree3->scale(0.01f, 0.01f, 0.01f);
-	// tree3->scale(3.0f);
-	// tree3->translate(-0.1f, 0.0f, 0.1f);
+	slender = new Enemy;
+	slender->loadData("iron_man.obj", "iron_man.ktx");
+	slender->bindProgram(height_program);
+	slender->scale(0.01f, 0.01f, 0.01f);
+	slender->translate(0.9f, 0.0f, 0.9f);
 
 	c = new Camera(0, 0, 0, me->x(), 0.0f, me->z());
 	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);	
@@ -256,9 +263,16 @@ int main(int argc, const char* argv[]){
 
 
 		lastTime = glfwGetTime();
+
+		float desat = enemyDist*4.0f;
+		desat = desat > 1.0f ? 1.0f : desat;
+		desat = 1-desat;
+		desat *= desat;
+
 		float bw = (0.5294f + 0.8078f + 0.9804f)/3.0f;
-		//const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
-		const GLfloat background_color[] = {bw, bw, bw, 1.0f};
+		const GLfloat background_color[] = {(bw-0.5294f)*desat + 0.5294f, (bw-0.8078f)*desat + 0.8078f, (bw-0.9804f)*desat + 0.9804f, 1.0f};
+
+		// const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
 
 		GLfloat far = 1.0f;
@@ -268,32 +282,39 @@ int main(int argc, const char* argv[]){
 		c->bindProgram(ter_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
+		glUniform1f(4, desat);
 		t->draw();
 
 		glUseProgram(grass_program);
 		c->bindProgram(grass_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
+		glUniform1f(4, desat);
 
 
 		static bool grassOK = true;
 		if(Input::instance().isJustPressedKey(GLFW_KEY_G)) grassOK = !grassOK;
-		if(grassOK)
-		grass->draw();
+		if(grassOK) grass->draw();
 
 		glUseProgram(height_program);
 		c->bindProgram(height_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		// tree->draw();
-		// tree2->draw();
-		// tree3->draw();
-		for(int i = 0; i < 400; i++){
+		glUniform3fv(3, 1, glm::value_ptr(light));
+		glUniform1f(4, desat);
+		for(int i = 0; i < 150; i++){
 			if(trees[i] != NULL)
 				trees[i]->draw();
 		}
 		me->draw();
 
-		//std::cout << me->x() << " " << me->z() << std::endl;
+		for(int i = 1; i < 5; i++){
+			if(tomb[i] != NULL)
+				tomb[i]->draw();
+		}
+
+		slender->draw(me->x(), me->z(), 0.2f, &enemyDist);
+
+		if(enemyDist <= 0.001f) glfwSetWindowShouldClose(window, GL_TRUE);
 
 		Input::instance().resetMouse();
 		Input::instance().resetJoyAxes();
@@ -314,6 +335,15 @@ int main(int argc, const char* argv[]){
 	/////////////////
 	// Destroy All //
 	/////////////////
+	
+	delete c;
+	delete t;
+	delete plane;
+	delete[] trees;
+	delete me;
+	delete grass;
+	delete slender;
+
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	exit(EXIT_SUCCESS);

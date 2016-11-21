@@ -21,6 +21,7 @@ Player *me;
 Grass *grass;
 Enemy *slender;
 Object **tomb;
+HUD *loser;
 
 glm::mat4 proj;
 glm::vec4 light = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
@@ -138,6 +139,8 @@ int main(int argc, const char* argv[]){
 	std::string g_names[] = {"grass_vertex.glsl", "default_frag.glsl"};
 	GLuint grass_program = create_program(2, flags, g_names);
 
+	std::string hud_names[] = {"hud_vertex.glsl", "hud_frag.glsl"};
+	GLuint hud_program = create_program(2, flags, hud_names);
 
 	/////////////
 	// Objects //
@@ -152,12 +155,15 @@ int main(int argc, const char* argv[]){
 	grass->bindProgram(grass_program);
 	grass->scale(0.01f, 0.01f, 0.01f);
 
+	loser = new HUD;
+	loser->loadData("green.ktx");
+	loser->bindProgram(hud_program);
+
 	me = new Player;
 	me->loadData("iron_man.obj", "iron_man.ktx");
 	me->bindProgram(height_program);
 	me->scale(0.01f, 0.01f, 0.01f);
 	me->translate(0.1f, 0.0f, 0.0f);
-
 
 	trees = new Object* [400];
 	int seed = 713;
@@ -314,7 +320,13 @@ int main(int argc, const char* argv[]){
 
 		slender->draw(me->x(), me->z(), 0.2f, &enemyDist);
 
-		if(enemyDist <= 0.001f) glfwSetWindowShouldClose(window, GL_TRUE);
+		glDisable(GL_DEPTH_TEST);
+		if(enemyDist <= 0.001f){
+			glUseProgram(hud_program);
+			loser->draw();
+			//glfwSetWindowShouldClose(window, GL_TRUE);
+		}
+		glEnable(GL_DEPTH_TEST);
 
 		Input::instance().resetMouse();
 		Input::instance().resetJoyAxes();

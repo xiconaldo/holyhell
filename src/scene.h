@@ -176,5 +176,12 @@ public:
 	void draw(float x, float y, float factor, float* dist);
 };
 
+// HUD
+class HUD : public Object{
+public:
+	HUD();
+	void loadData(const std::string& text_name);
+	void draw();
+};
 
 #endif

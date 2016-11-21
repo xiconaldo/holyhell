@@ -32,7 +32,7 @@ Enemy::Enemy(){}
 
 void Enemy::draw(float x, float z, float factor, float *dist){
 	
-	factor *= 0.002f;
+	factor *= 0.02f;
 	glm::vec2 dir(m_model[3].x - x, m_model[3].z - z);
 	*dist = glm::length(dir);
 	if(*dist > 0.001f){

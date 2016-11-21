@@ -76,6 +76,12 @@ void Player::draw(){
 			localRotate(0, 1, 0, -0.01f * Input::instance().moveJoyAxis2X()*3);
 	}
 
+	if(m_model[3].x > 0.99f) m_model[3].x = 0.99f;
+	else if(m_model[3].x < -0.99f) m_model[3].x = -0.99f;
+
+	if(m_model[3].y > 0.99f) m_model[3].y = 0.99f;
+	else if(m_model[3].y < -0.99f) m_model[3].y = -0.99f;
+
 	const float position[] = {m_model[3].x, m_model[3].z};
 
 	void *content;

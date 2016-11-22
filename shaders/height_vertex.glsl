@@ -37,7 +37,7 @@ void main(){
 	gl_Position = proj * view * m_model * pos;
 	text_coord = uv;
 
-	vec3 my_normal = normalize((transpose(inverse(m_model)) * vec4(normal, 1.0f)).xyz);
+	vec3 my_normal = normalize((transpose(inverse(m_model)) * vec4(normal, 0.0f)).xyz);
 
 	float NL = max(-dot(my_normal, normalize(light_dir)), 0.0f);
 	float RV = 1.0f;

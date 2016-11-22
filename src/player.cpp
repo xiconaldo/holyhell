@@ -41,27 +41,23 @@ Player::Player(){}
 
 void Player::draw(){
 	int factor = 1.0f;
-	static int stamina = 1000;
+	static int stamina = 700;
 
 	if(Input::instance().getStateKey(GLFW_KEY_LEFT_SHIFT)){
-		if(stamina){
+		stamina -= 3;
+		if(stamina > 10){
 			factor = 2.0f;
-			stamina -= 2;
-			if(stamina < 0) stamina = 0;
 		}
-	}
-	else{
-		stamina++;
-		if(stamina > 300) stamina = 300;
 	}
 	
 	if(Input::instance().getStateKey(GLFW_KEY_W))
 		localTranslate(0.1f * factor, 0.0f, 0.0f);
-	if(Input::instance().getStateKey(GLFW_KEY_S))
+	else if(Input::instance().getStateKey(GLFW_KEY_S))
 	 	localTranslate(-0.1f * factor, 0.0f, 0.0f);
-	 if(Input::instance().getStateKey(GLFW_KEY_A))
+
+	if(Input::instance().getStateKey(GLFW_KEY_A))
 		localTranslate(0.0f, 0.0f, -0.1f * factor);
-	if(Input::instance().getStateKey(GLFW_KEY_D))
+	else if(Input::instance().getStateKey(GLFW_KEY_D))
 	 	localTranslate(0.0f, 0.0f, 0.1f * factor);
 
 	if(Input::instance().moveMouseX())
@@ -69,8 +65,13 @@ void Player::draw(){
 
 
 	if(glfwJoystickPresent(GLFW_JOYSTICK_1)){
-		if(Input::instance().isJustPressedJoyButton(JOY_R1))
-			factor = 2.0f;
+
+		if(Input::instance().isPressedJoyButton(JOY_R1)){
+			stamina -= 3;
+			if(stamina > 10){
+				factor = 2.0f;
+			}
+		}
 
 		if (Input::instance().moveJoyAxis1X() > 0.0f)
 			localTranslate(0.0f, 0.0f, 0.1f * factor);
@@ -81,10 +82,26 @@ void Player::draw(){
 			localTranslate(-0.1f * factor, 0.0f, 0.0f);
 		else if (Input::instance().moveJoyAxis1Y() < 0.0f)
 			localTranslate(0.1f * factor, 0.0f, 0.0f);
+		else
+			stamina++;
 
 		if(Input::instance().moveJoyAxis2X())
 			localRotate(0, 1, 0, -0.01f * Input::instance().moveJoyAxis2X()*3);
 	}
+
+	stamina++;
+	if(stamina > 700) stamina = 700;
+	else if(stamina < 0) stamina = 0;
+
+	if(this->x() < -0.99f)
+		m_model[3].x = -0.99f;
+	else if(this->x() > 0.99f)
+		m_model[3].x = 0.99f;
+
+	if(this->z() < -0.99f)
+		m_model[3].z = -0.99f;
+	else if(this->z() > 0.99f)
+		m_model[3].z = 0.99f;
 
 	const float position[] = {m_model[3].x, m_model[3].z};
 

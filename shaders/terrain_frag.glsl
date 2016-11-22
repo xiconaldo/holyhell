@@ -19,7 +19,4 @@ void main(){
 	vec3 bw_color = vec3(bw);
 
 	color.rgb = (bw_color - color.rgb)*desat + color.rgb;
-
-	// if(I_factor < 0.1f) color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-	// else if(I_factor > 0.5f) color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 }

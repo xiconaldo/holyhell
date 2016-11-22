@@ -130,7 +130,7 @@ bool Input::isReleasedJoyButton(int key){
 }
 
 bool Input::isPressedJoyButton(int key){
-	return joystickButtons[key] == GLFW_REPEAT;
+	return joystickButtons[key] == GLFW_REPEAT || joystickButtons[key] == GLFW_PRESS;
 }
 
 int  Input::getStateJoyButton(int key){

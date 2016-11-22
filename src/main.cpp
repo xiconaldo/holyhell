@@ -21,7 +21,7 @@ Grass *grass;
 Enemy *slender;
 Object **tomb;
 
-glm::vec3 tombPos[8];
+glm::vec3 tombPos[6];
 
 glm::mat4 proj;
 glm::vec3 light = glm::vec3(-1.0f, -1.0f, -1.0f);
@@ -29,7 +29,7 @@ glm::mat4 rotP = glm::rotate(0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
 glm::mat4 rotN = glm::rotate(-0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
 float enemyDist = 2.0f;
 float factor = 0.2f;
-int tombCount = 7;
+int tombCount = 5;
 const int maxTombCount = tombCount;
 
 void initDirectories(const char *location){
@@ -243,7 +243,7 @@ int main(int argc, const char* argv[]){
 				if(tombPos[i].z > 0.0f){
 					if(glm::distance(glm::vec2(tombPos[i].x, tombPos[i].y), glm::vec2(me->x(), me->z())) < 0.05f){
 						tombPos[i].z = -1.0f;
-						factor *= 1.35f;
+						factor *= 1.5f;
 						tombCount--;
 						break;
 					}	
@@ -280,7 +280,7 @@ int main(int argc, const char* argv[]){
 					if(tombPos[i].z > 0.0f){
 						if(glm::distance(glm::vec2(tombPos[i].x, tombPos[i].y), glm::vec2(me->x(), me->z())) < 0.05f){
 							tombPos[i].z = -1.0f;
-							factor *= 1.35f;
+							factor *= 1.5f;
 							tombCount--;
 							break;
 						}	

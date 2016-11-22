@@ -41,9 +41,19 @@ Player::Player(){}
 
 void Player::draw(){
 	int factor = 1.0f;
+	static int stamina = 1000;
 
-	if(Input::instance().getStateKey(GLFW_KEY_LEFT_SHIFT))
-		factor = 2.0f;
+	if(Input::instance().getStateKey(GLFW_KEY_LEFT_SHIFT)){
+		if(stamina){
+			factor = 2.0f;
+			stamina -= 2;
+			if(stamina < 0) stamina = 0;
+		}
+	}
+	else{
+		stamina++;
+		if(stamina > 300) stamina = 300;
+	}
 	
 	if(Input::instance().getStateKey(GLFW_KEY_W))
 		localTranslate(0.1f * factor, 0.0f, 0.0f);

@@ -24,7 +24,7 @@ Object **tomb;
 glm::vec3 tombPos[8];
 
 glm::mat4 proj;
-glm::vec4 light = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
+glm::vec3 light = glm::vec3(-1.0f, -1.0f, -1.0f);
 glm::mat4 rotP = glm::rotate(0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
 glm::mat4 rotN = glm::rotate(-0.005f, glm::vec3(1.0f, 0.0f, 0.0f));
 float enemyDist = 2.0f;
@@ -101,7 +101,7 @@ int main(int argc, const char* argv[]){
 	//GLFWwindow* window = glfwCreateWindow(1024, 768, "Projeto de Computação Gráfica", NULL, NULL);
 	//GLFWwindow* window = glfwCreateWindow(1366, 768, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
 	
-	GLFWwindow* window = glfwCreateWindow(1024, 576, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
+	GLFWwindow* window = glfwCreateWindow(1024, 576, "Projeto de Computação Gráfica", NULL, NULL);
 	
 	if (!window){
 		glfwTerminate();
@@ -310,14 +310,14 @@ int main(int argc, const char* argv[]){
 		c->bindProgram(ter_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
-		glUniform1f(4, desat);
+		glUniform1f(7, desat);
 		t->draw();
 
 		glUseProgram(grass_program);
 		c->bindProgram(grass_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
-		glUniform1f(4, desat);
+		glUniform1f(7, desat);
 
 
 		static bool grassOK = true;
@@ -328,7 +328,7 @@ int main(int argc, const char* argv[]){
 		c->bindProgram(height_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
-		glUniform1f(4, desat);
+		glUniform1f(7, desat);
 		for(int i = 0; i < 150; i++){
 			if(trees[i] != NULL)
 				trees[i]->draw();
@@ -342,7 +342,7 @@ int main(int argc, const char* argv[]){
 		}
 
 		if(tombCount){
-			glUniform1f(4, 0.0f);
+			glUniform1f(7, 0.0f);
 			slender->draw(me->x(), me->z(), factor, &enemyDist);
 		}
 		else{

@@ -196,7 +196,7 @@ int main(int argc, const char* argv[]){
 	}
 
 	slender = new Enemy;
-	slender->loadData("iron_man.obj", "iron_man.ktx");
+	slender->loadData("iron_man.obj", "iron_man2.ktx");
 	slender->bindProgram(height_program);
 	slender->scale(0.01f, 0.01f, 0.01f);
 	slender->translate(0.9f, 0.05f, 0.9f);
@@ -342,8 +342,10 @@ int main(int argc, const char* argv[]){
 		}
 
 		if(tombCount){
+			glUniform1f(5, 1.0f);
 			glUniform1f(7, 0.0f);
 			slender->draw(me->x(), me->z(), factor, &enemyDist);
+			glUniform1f(5, 0.2f);
 		}
 		else{
 			enemyDist = 2.0f;

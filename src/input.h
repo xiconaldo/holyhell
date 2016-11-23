@@ -2,6 +2,7 @@
 #define INPUT_H
 
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 enum {JOY_TRIANGLE = 0, JOY_CIRCLE, JOY_CROSS, JOY_SQUARE, JOY_L1, JOY_R1, JOY_L2, JOY_R2, JOY_BACK, JOY_START, JOY_L3, JOY_R3};
 enum {JOY_Y = 0, JOY_B, JOY_A, JOY_X, JOY_LB, JOY_RB, JOY_LT, JOY_RT, JOY_VIEW, JOY_MENU, JOY_LS, JOY_RS};

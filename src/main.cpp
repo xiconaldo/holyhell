@@ -11,6 +11,9 @@
 #define KTX_OPENGL 1
 #include <ktx.h>
 
+//////////////////////
+// GLOBAL VARIABLES //
+//////////////////////////////////////////////////////////////////////////
 CreateProgram create_program;
 Camera *c;
 Terrain *t;
@@ -31,7 +34,12 @@ float enemyDist = 2.0f;
 float factor = 0.2f;
 int tombCount = 5;
 const int maxTombCount = tombCount;
+///////////////////////////////////////////////////////////////////////////////
 
+
+////////////////////////////////
+// DIRECTORIES INITIALIZATION //
+///////////////////////////////////////////////////////////////////////////////
 void initDirectories(const char *location){
 	std::string SHADERS;
 	std::string DATA;
@@ -45,10 +53,13 @@ void initDirectories(const char *location){
 	Object::setBaseDataLocation(DATA);
 	Object::setBaseTextLocation(TEXTURES);
 }
+///////////////////////////////////////////////////////////////////////////////
+
+
 
 ////////////////////////
-// Callback Functions //
-////////////////////////
+// CALLBACK FUNCTIONS //
+///////////////////////////////////////////////////////////////////////////////
 void error_callback(int error, const char* description)
 {
 	std::cerr << description;
@@ -76,6 +87,8 @@ void joystick_callback(int joy, int event)
         std::cout << "The joystick was disconnected" << std::endl;
     }
 }
+//////////////////////////////////////////////////////////////////////////////////
+
 
 
 int main(int argc, const char* argv[]){
@@ -83,8 +96,8 @@ int main(int argc, const char* argv[]){
 	initDirectories(argv[0]);
 
 	/////////////////////////
-	// GLFW Initialization //
-	/////////////////////////
+	// GLFW INITIALIZATION //
+	//////////////////////////////////////////////////////////////////////////////
 	if (!glfwInit()){
 		std::cerr << "Failed to initialize GLFW" << std::endl;
 		exit(EXIT_FAILURE);
@@ -93,14 +106,13 @@ int main(int argc, const char* argv[]){
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	//////////////////////////////////////////////////////////////////////////////
+
+
 
 	///////////////////////////
-	// Window Initialization //
-	///////////////////////////
-	//GLFWwindow* window = glfwCreateWindow(800, 600, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
-	//GLFWwindow* window = glfwCreateWindow(1024, 768, "Projeto de Computação Gráfica", NULL, NULL);
-	//GLFWwindow* window = glfwCreateWindow(1366, 768, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
-	
+	// WINDOW INITIALIZATION //
+	//////////////////////////////////////////////////////////////////////////////	
 	GLFWwindow* window = glfwCreateWindow(1024, 576, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
 	
 	if (!window){
@@ -116,20 +128,25 @@ int main(int argc, const char* argv[]){
 	glfwSetCursorPosCallback(window, cursor_pos_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetJoystickCallback(joystick_callback);
-	//glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+	////////////////////////////////////////////////////////////////////////////////
+
+
 
 	/////////////////////////
-	// GLEW Initialization //
-	/////////////////////////
+	// GLEW INITIALIZATION //
+	////////////////////////////////////////////////////////////////////////////////
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK) {
 		std::cerr << "Failed to initialize GLEW" << std::endl;
 		exit(EXIT_FAILURE);
 	}
+	///////////////////////////////////////////////////////////////////////////////
+
+
 
 	//////////////////////
-	// Program begining //
-	//////////////////////
+	// PROGRAM CREATION //
+	//////////////////////////////////////////////////////////////////////////////////
 	GLenum flags[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 	GLenum ter_flags[] = {GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_FRAGMENT_SHADER};
 
@@ -141,12 +158,13 @@ int main(int argc, const char* argv[]){
 
 	std::string g_names[] = {"grass_vertex.glsl", "default_frag.glsl"};
 	GLuint grass_program = create_program(2, flags, g_names);
+	//////////////////////////////////////////////////////////////////////////////////
 
 
-	/////////////
-	// Objects //
-	/////////////
-	
+
+	///////////////////////////
+	// OBJECTS INITIALIZATION//
+	////////////////////////////////////////////////////////////////////////////////////
 	t = new Terrain;
 	t->loadData("plane.obj", "dirt.ktx", "map.ktx");
 	t->bindProgram(ter_program);
@@ -202,7 +220,9 @@ int main(int argc, const char* argv[]){
 	slender->translate(0.9f, 0.05f, 0.9f);
 
 	c = new Camera(0, 0, 0, me->x(), 0.0f, me->z());
-	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);	
+	proj = glm::infinitePerspective(3.14f/4.0f, 16.0f/9.0f, 0.001f);
+	//////////////////////////////////////////////////////////////////////////////////	
+
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 	glEnable(GL_BLEND);
@@ -210,17 +230,21 @@ int main(int argc, const char* argv[]){
 	glEnable(GL_DEPTH_TEST);
 	glCullFace(GL_BACK);
 	
+
 	///////////////
-	// Main Loop //
-	///////////////
-	
+	// MAIN LOOP //
+	//////////////////////////////////////////////////////////////////////////////////
 	double lastTime, currentTime;
 	int frame = 0;
 
 	while (!glfwWindowShouldClose(window))
 	{
 
+		///////////////////
+		// INPUT CONTROL //
+		//////////////////////////////////////////////////////////////////////////////
 		static float vertical_angle = 0.0f;
+		static bool grassOK = true;
 
 		if(Input::instance().moveMouseY()){
 			c->rotate(1, 0, 0, -0.01f * Input::instance().moveMouseY());
@@ -249,6 +273,8 @@ int main(int argc, const char* argv[]){
 				}
 			}
 		}
+
+		if(Input::instance().isJustPressedKey(GLFW_KEY_G)) grassOK = !grassOK;
 
 		if(glfwJoystickPresent(GLFW_JOYSTICK_1)){
 
@@ -285,11 +311,21 @@ int main(int argc, const char* argv[]){
 						}	
 					}
 				}
-			}			
+			}	
+
+			if(Input::instance().isJustPressedJoyButton(JOY_SQUARE)) grassOK = false;
+			if(Input::instance().isJustPressedJoyButton(JOY_TRIANGLE)) grassOK = true;
+						
 		}
+		/////////////////////////////////////////////////////////////////////////////
 
 		lastTime = glfwGetTime();
 
+
+
+		/////////////////////
+		// SENTTING RENDER //
+		////////////////////////////////////////////////////////////////////////////////
 		float desat = enemyDist*4.0f;
 		desat = desat > 1.0f ? 1.0f : desat;
 		desat = 1-desat;
@@ -302,7 +338,13 @@ int main(int argc, const char* argv[]){
 
 		GLfloat far = 1.0f;
 		glClearBufferfv(GL_DEPTH, 0, &far);
+		////////////////////////////////////////////////////////////////////////////////
+		
 
+
+		///////////////////////
+		// RENDERING OBJECTS //
+		////////////////////////////////////////////////////////////////////////////////
 		glUseProgram(ter_program);
 		c->bindProgram(ter_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
@@ -315,10 +357,6 @@ int main(int argc, const char* argv[]){
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
 		glUniform1f(7, desat);
-
-
-		static bool grassOK = true;
-		if(Input::instance().isJustPressedKey(GLFW_KEY_G)) grassOK = !grassOK;
 		if(grassOK) grass->draw();
 
 		glUseProgram(height_program);
@@ -347,7 +385,13 @@ int main(int argc, const char* argv[]){
 		else{
 			enemyDist += 2.0f;
 		}
+		///////////////////////////////////////////////////////////////////////////
 
+
+
+		//////////////////
+		// LOOP CONTROL //
+		////////////////////////////////////////////////////////////////////////////
 		if(enemyDist <= 0.001f || enemyDist > 1000.0f) glfwSetWindowShouldClose(window, GL_TRUE);
 
 		Input::instance().resetMouse();
@@ -363,13 +407,17 @@ int main(int argc, const char* argv[]){
 		if(frame%120 == 0){
 			std::cout << int(1/(currentTime - lastTime)) << " fps" << std::endl;
 		}
+		///////////////////////////////////////////////////////////////////////////////
 		
+
 	}
+	/////////////////////////////////////////////////////////////////////////////////////
+
+
 
 	/////////////////
-	// Destroy All //
-	/////////////////
-	
+	// DESTROY ALL //
+	//////////////////////////////////////////////////////////////////////////////////////
 	delete c;
 	delete t;
 	delete plane;
@@ -385,4 +433,5 @@ int main(int argc, const char* argv[]){
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
+	///////////////////////////////////////////////////////////////////////////////////////
 }

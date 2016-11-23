@@ -5,6 +5,13 @@
  */
 Grass::Grass(){}
 
+Grass::~Grass(){
+	glDeleteBuffers(1, &vertex_buffer);
+	glDeleteVertexArrays(1, &vao);
+	glDeleteSamplers(1, &samp);
+	glDeleteTextures(1, &text_gl_name);
+}
+
 void Grass::draw(){
 	
 	glActiveTexture(GL_TEXTURE0);

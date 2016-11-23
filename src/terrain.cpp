@@ -5,6 +5,14 @@
  */
 Terrain::Terrain(){}
 
+Terrain::~Terrain(){
+	glDeleteBuffers(1, &vertex_buffer);
+	glDeleteVertexArrays(1, &vao);
+	glDeleteSamplers(1, &samp);
+	glDeleteTextures(1, &text_gl_name);
+	glDeleteTextures(1, &text_map);
+}
+
 /**
  * Carrega os dados do objeto em um buffer.
  * @param object_name nome do arquivo onde se encontram os dados.

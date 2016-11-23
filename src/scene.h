@@ -96,6 +96,7 @@ private:
 class Object{
 public:
 	Object();
+	~Object();
 	void loadData(const std::string& object_name, const std::string& text_name = "");
 	void localRotate(int xc, int yc, int zc, float degrees);
 	void localTranslate(float x, float y, float z);
@@ -147,6 +148,7 @@ protected:
 class Terrain : public Object{
 public:
 	Terrain();
+	~Terrain();
 	void loadData(const std::string& object_name, const std::string& text_name, const std::string& text_map_name);
 	void draw();
 
@@ -158,6 +160,7 @@ private:
 class Grass : public Object{
 public :
 	Grass();
+	~Grass();
 	void draw();
 };
 
@@ -165,14 +168,19 @@ public :
 class Player : public Object{
 public:
 	Player();
+	~Player();
 	void loadData(const std::string& object_name, const std::string& text_name = "");
 	void draw();
+
+private:
+	GLuint player_position;
 };
 
 // Enemy
 class Enemy : public Object{
 public:
 	Enemy();
+	~Enemy();
 	void loadData(const std::string& object_name, const std::string& text_name = "");
 	void draw(float x, float y, float factor, float* dist);
 };

@@ -1,6 +1,19 @@
 #include <scene.h>
 
 /**
+ * Contrutor vazio.
+ */
+Player::Player(){}
+
+Player::~Player(){
+	glDeleteBuffers(1, &vertex_buffer);
+	glDeleteBuffers(1, &player_position);
+	glDeleteVertexArrays(1, &vao);
+	glDeleteSamplers(1, &samp);
+	glDeleteTextures(1, &text_gl_name);
+}
+
+/**
  * Carrega os dados do objeto em um buffer.
  * @param object_name nome do arquivo onde se encontram os dados.
  */
@@ -15,7 +28,6 @@ void Player::loadData(const std::string& object_name, const std::string& text_na
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * data.size(), (void*)data.data(), GL_STATIC_DRAW);
 
-	GLuint player_position;
 	float position[2];
 	position[0] = m_model[3].x;
 	position[1] = m_model[3].z;
@@ -34,14 +46,9 @@ void Player::loadData(const std::string& object_name, const std::string& text_na
 	verifyTextError(error);
 }
 
-/**
- * Contrutor vazio.
- */
-Player::Player(){}
-
 void Player::draw(){
 	int factor = 1.0f;
-	static int stamina = 700;
+	static int stamina = 5000;
 
 	if(Input::instance().getStateKey(GLFW_KEY_LEFT_SHIFT)){
 		stamina -= 3;

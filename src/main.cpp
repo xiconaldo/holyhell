@@ -101,7 +101,7 @@ int main(int argc, const char* argv[]){
 	//GLFWwindow* window = glfwCreateWindow(1024, 768, "Projeto de Computação Gráfica", NULL, NULL);
 	//GLFWwindow* window = glfwCreateWindow(1366, 768, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
 	
-	GLFWwindow* window = glfwCreateWindow(1024, 576, "Projeto de Computação Gráfica", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(1024, 576, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
 	
 	if (!window){
 		glfwTerminate();
@@ -186,7 +186,7 @@ int main(int argc, const char* argv[]){
 	tomb[0]->scale(0.03f);
 	for(int i = 1; i < maxTombCount+1; i++){
 		tomb[i] = new Object(*tomb[0]);
-		seed = (seed * 3 + i)%1024; //4096; 
+		seed = (seed * 3 + i)%1024;
 		posx = ((seed >> 5) - 16)/16.0f;
 		posz = (seed % 32 - 16)/16.0f;
 		tomb[i]->scale(1.0f, 1.0f + 0.1f * (i%6), 1.0f);
@@ -209,7 +209,6 @@ int main(int argc, const char* argv[]){
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
 	glCullFace(GL_BACK);
-	//glEnable(GL_CULL_FACE);
 	
 	///////////////
 	// Main Loop //
@@ -289,7 +288,6 @@ int main(int argc, const char* argv[]){
 			}			
 		}
 
-
 		lastTime = glfwGetTime();
 
 		float desat = enemyDist*4.0f;
@@ -300,7 +298,6 @@ int main(int argc, const char* argv[]){
 		float bw = (0.5294f + 0.8078f + 0.9804f)/3.0f;
 		const GLfloat background_color[] = {(bw-0.5294f)*desat + 0.5294f, (bw-0.8078f)*desat + 0.8078f, (bw-0.9804f)*desat + 0.9804f, 1.0f};
 
-		// const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
 		glClearBufferfv(GL_COLOR, 0, background_color);
 
 		GLfloat far = 1.0f;
@@ -348,16 +345,15 @@ int main(int argc, const char* argv[]){
 			glUniform1f(5, 0.2f);
 		}
 		else{
-			enemyDist = 2.0f;
+			enemyDist += 2.0f;
 		}
 
-		if(enemyDist <= 0.001f) glfwSetWindowShouldClose(window, GL_TRUE);
+		if(enemyDist <= 0.001f || enemyDist > 1000.0f) glfwSetWindowShouldClose(window, GL_TRUE);
 
 		Input::instance().resetMouse();
 		Input::instance().resetJoyAxes();
 		Input::instance().updateKeys();
 		
-		//glfwSwapInterval(1);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
@@ -381,6 +377,10 @@ int main(int argc, const char* argv[]){
 	delete me;
 	delete grass;
 	delete slender;
+
+	glDeleteProgram(ter_program);
+	glDeleteProgram(grass_program);
+	glDeleteProgram(height_program);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();

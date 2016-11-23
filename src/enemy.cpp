@@ -1,6 +1,18 @@
 #include <scene.h>
 
 /**
+ * Contrutor vazio.
+ */
+Enemy::Enemy(){}
+
+Enemy::~Enemy(){
+	glDeleteBuffers(1, &vertex_buffer);
+	glDeleteVertexArrays(1, &vao);
+	glDeleteSamplers(1, &samp);
+	glDeleteTextures(1, &text_gl_name);
+}
+
+/**
  * Carrega os dados do objeto em um buffer.
  * @param object_name nome do arquivo onde se encontram os dados.
  */
@@ -24,11 +36,6 @@ void Enemy::loadData(const std::string& object_name, const std::string& text_nam
 	KTX_error_code_t error = ktxLoadTextureN((base_text_location + text_name).c_str(), &text_gl_name, &text_target, NULL, NULL, NULL, NULL, NULL);
 	verifyTextError(error);
 }
-
-/**
- * Contrutor vazio.
- */
-Enemy::Enemy(){}
 
 void Enemy::draw(float x, float z, float speed, float *dist){
 	

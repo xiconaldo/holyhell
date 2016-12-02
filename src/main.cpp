@@ -96,7 +96,8 @@ int main(int argc, const char* argv[]){
 	//GLFWwindow* window = glfwCreateWindow(1024, 768, "Projeto de Computação Gráfica", NULL, NULL);
 	//GLFWwindow* window = glfwCreateWindow(1366, 768, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
 	
-	GLFWwindow* window = glfwCreateWindow(1024, 576, "Projeto de Computação Gráfica", NULL, NULL);
+	//GLFWwindow* window = glfwCreateWindow(1024, 576, "Projeto de Computação Gráfica", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(1920, 1080, "Projeto de Computação Gráfica", glfwGetPrimaryMonitor(), NULL);
 	
 	if (!window){
 		glfwTerminate();
@@ -214,7 +215,7 @@ int main(int argc, const char* argv[]){
 	GLuint depthTexture;
 	glGenTextures(1, &depthTexture);
 	glBindTexture(GL_TEXTURE_2D, depthTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, 1024, 576, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, 1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -267,6 +268,15 @@ int main(int argc, const char* argv[]){
 			}
 		}
 
+		if(Input::instance().isPressedKey(GLFW_KEY_U)){
+			light = rotP * light;
+			light_proj = rotP * light_proj;
+		}
+		if(Input::instance().isPressedKey(GLFW_KEY_I)){
+			light = rotN * light;
+			light_proj = rotN * light_proj;
+		}
+
 		if(glfwJoystickPresent(GLFW_JOYSTICK_1)){
 
 			Input::instance().updateJoyButton();
@@ -313,7 +323,7 @@ int main(int argc, const char* argv[]){
 		light_cam->bindProgram(shadow_ter_program);
 		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(light_proj));
 		glUniform3fv(3, 1, glm::value_ptr(light));
-		t->draw();
+		//t->draw();
 
 		glUseProgram(shadow_grass_program);
 		light_cam->bindProgram(shadow_grass_program);
@@ -330,39 +340,39 @@ int main(int argc, const char* argv[]){
 		//me->draw();
 		
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glDisable(GL_DEPTH_TEST);
-		glUseProgram(cocozinho);
+		// glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		// glDisable(GL_DEPTH_TEST);
+		// glUseProgram(cocozinho);
 
-		GLuint myVAO;
-		glGenVertexArrays(1, &myVAO);
-		glBindVertexArray(myVAO);
+		// GLuint myVAO;
+		// glGenVertexArrays(1, &myVAO);
+		// glBindVertexArray(myVAO);
 
-		GLfloat quad[] = {-1.0f, 1.0f,  -1.0f, -1.0f,  1.0f, -1.0f,
-						  1.0f, 1.0f,  -1.0f,  1.0f,  1.0f, -1.0f};
+		// GLfloat quad[] = {-1.0f, 1.0f,  -1.0f, -1.0f,  1.0f, -1.0f,
+		// 				  1.0f, 1.0f,  -1.0f,  1.0f,  1.0f, -1.0f};
 
-		GLfloat tex[] = {0.0f, 1.0f,  0.0f, 0.0f,  1.0f, 0.0f,
-					     1.0f, 1.0f,  0.0f, 1.0f,  1.0f, 0.0f};
+		// GLfloat tex[] = {0.0f, 1.0f,  0.0f, 0.0f,  1.0f, 0.0f,
+		// 			     1.0f, 1.0f,  0.0f, 1.0f,  1.0f, 0.0f};
 
-		GLuint drawBuffer[2];
-		glGenBuffers(2, drawBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, drawBuffer[0]);
-		glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), (void*)quad, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-		glEnableVertexAttribArray(0);
+		// GLuint drawBuffer[2];
+		// glGenBuffers(2, drawBuffer);
+		// glBindBuffer(GL_ARRAY_BUFFER, drawBuffer[0]);
+		// glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), (void*)quad, GL_STATIC_DRAW);
+		// glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+		// glEnableVertexAttribArray(0);
 
-		glBindBuffer(GL_ARRAY_BUFFER, drawBuffer[1]);
-		glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), (void*)tex, GL_STATIC_DRAW);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-		glEnableVertexAttribArray(1);
+		// glBindBuffer(GL_ARRAY_BUFFER, drawBuffer[1]);
+		// glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), (void*)tex, GL_STATIC_DRAW);
+		// glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+		// glEnableVertexAttribArray(1);
 
 		
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, depthTexture);
+		// glActiveTexture(GL_TEXTURE2);
+		// glBindTexture(GL_TEXTURE_2D, depthTexture);
 
-		const GLfloat background_color[] = {1.0f, 1.0f, 1.0f, 1.0f};
-		glClearBufferfv(GL_COLOR, 0, background_color);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		// const GLfloat background_color[] = {1.0f, 1.0f, 1.0f, 1.0f};
+		// glClearBufferfv(GL_COLOR, 0, background_color);
+		// glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		////////////////////////////////////////////////////////////////////////////////////
 
@@ -372,44 +382,52 @@ int main(int argc, const char* argv[]){
 		// NORMAL DRAW //
 		////////////////////////////////////////////////////////////////////////////////////
 		
-		// glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		// const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
-		// glEnable(GL_DEPTH_TEST);
-		// glClearBufferfv(GL_COLOR, 0, background_color);
-		// glClearBufferfv(GL_DEPTH, 0, &far);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		// glUseProgram(ter_program);
-		// c->bindProgram(ter_program);
-		// glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		// glUniform3fv(3, 1, glm::value_ptr(light));
-		// glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
-		// glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
-		// glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
-		// t->draw();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_DEPTH_TEST);
 
-		// glUseProgram(grass_program);
-		// c->bindProgram(grass_program);
-		// glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		// glUniform3fv(3, 1, glm::value_ptr(light));
-		// glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
-		// glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
-		// glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
+		const GLfloat background_color[] = {0.5294f, 0.8078f , 0.9804f, 1.0f};
+		glEnable(GL_DEPTH_TEST);
+		glClearBufferfv(GL_COLOR, 0, background_color);
+		glClearBufferfv(GL_DEPTH, 0, &far);
 
-		// if(grassOK)
-		// grass->draw();
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, depthTexture);
 
-		// glUseProgram(height_program);
-		// c->bindProgram(height_program);
-		// glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
-		// glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
-		// glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
-		// glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
+		glUseProgram(ter_program);
+		c->bindProgram(ter_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		glUniform3fv(3, 1, glm::value_ptr(light));
+		glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
+		glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
+		glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
+		t->draw();
 
-		// for(int i = 0; i < numArvores; i++){
-		// 	if(trees[i] != NULL)
-		// 		trees[i]->draw();
-		// }
-		// me->draw();
+		glUseProgram(grass_program);
+		c->bindProgram(grass_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		glUniform3fv(3, 1, glm::value_ptr(light));
+		glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
+		glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
+		glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
+
+		if(grassOK)
+		grass->draw();
+
+		glUseProgram(height_program);
+		c->bindProgram(height_program);
+		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(proj));
+		glUniformMatrix4fv(8, 1, GL_FALSE, glm::value_ptr(light_cam->getView()));
+		glUniformMatrix4fv(9, 1, GL_FALSE, glm::value_ptr(light_proj));
+		glUniformMatrix4fv(10, 1, GL_FALSE, glm::value_ptr(biasMatrix));
+
+		for(int i = 0; i < numArvores; i++){
+			if(trees[i] != NULL)
+				trees[i]->draw();
+		}
+		me->draw();
 
 		///////////////////////////////////////////////////////////////////////////////////
 		

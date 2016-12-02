@@ -10,7 +10,7 @@ in 	vec2 text_coord;
 in  vec4 shadow_coord;
 out vec4 color;
 
-float bias = 0.005f;
+float bias = 0.0001f;
 
 void main(){
 	vec3 normal = texture(height_map, text_coord).rgb;
@@ -20,11 +20,11 @@ void main(){
 
 	float intensity = -dot(normal, local_light);
 	if(intensity < 0.4f) intensity = 0.4f;
+	intensity = 1.0f;
 
-	if ( texture(shadow_map, shadow_coord.xy).r  <  shadow_coord.z){
-	   intensity = 0.4f;
+	if ( texture(shadow_map, shadow_coord.xy).r  <  shadow_coord.z - bias){
+	   intensity *= 0.5f;
 	}	
-	intensity = 1.0f; // NEW
 
 	vec4 text_color = texture(base_texture, text_coord*50.0f);
 	color = vec4(text_color.xyz * pow(intensity, 2), text_color.a);

@@ -156,7 +156,7 @@ int main(int argc, const char* argv[]){
 	grass->scale(0.01f, 0.01f, 0.01f);
 
 	loser = new HUD;
-	loser->loadData("green.ktx");
+	loser->loadData("red.ktx");
 	loser->bindProgram(hud_program);
 
 	me = new Player;
@@ -322,9 +322,9 @@ int main(int argc, const char* argv[]){
 
 		glDisable(GL_DEPTH_TEST);
 		if(enemyDist <= 0.001f){
-			// glUseProgram(hud_program);
-			// loser->draw();
-			glfwSetWindowShouldClose(window, GL_TRUE);
+			glUseProgram(hud_program);
+			loser->draw();
+			//glfwSetWindowShouldClose(window, GL_TRUE);
 		}
 		glEnable(GL_DEPTH_TEST);
 

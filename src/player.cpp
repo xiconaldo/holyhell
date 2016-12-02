@@ -28,8 +28,9 @@ void Player::loadData(const std::string& object_name, const std::string& text_na
 	glSamplerParameteri(samp, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(samp, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindSampler(text_target, samp);
+
+	glGenTextures(1, &text_gl_name);
 	
-	glActiveTexture(GL_TEXTURE0);
 	KTX_error_code_t error = ktxLoadTextureN((base_text_location + text_name).c_str(), &text_gl_name, &text_target, NULL, NULL, NULL, NULL, NULL);
 	verifyTextError(error);
 }
